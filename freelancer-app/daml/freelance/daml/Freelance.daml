@@ -1,0 +1,118 @@
+-- CantonLance — Private Freelancer Payment Protocol
+-- Demonstrates Canton's sub-transaction privacy for freelancer contracts
+module Freelance where
+
+-- | A private project contract between a Client and a Freelancer.
+-- Only the client and freelancer can see this contract.
+-- Other freelancers' participant nodes never receive any data about it.
+template ProjectContract
+  with
+    client : Party
+    freelancer : Party
+    description : Text
+    hourlyRate : Decimal
+    totalBudget : Decimal
+    milestonesTotal : Int
+    milestonesCompleted : Int
+    amountPaid : Decimal
+    status : Text  -- "Active", "Completed", "Disputed"
+  where
+    signatory client, freelancer
+
+    -- Freelancer submits a completed milestone
+    choice SubmitMilestone : ContractId ProjectContract
+      controller freelancer
+      do
+        assertMsg "Contract must be Active" (status == "Active")
+        assertMsg "All milestones already completed" (milestonesCompleted < milestonesTotal)
+        create this with
+          milestonesCompleted = milestonesCompleted + 1
+
+    -- Client approves a milestone and triggers payment
+    choice ApproveMilestone : (ContractId ProjectContract, ContractId PaymentRecord)
+      with
+        milestonePayment : Decimal
+      controller client
+      do
+        assertMsg "Contract must be Active" (status == "Active")
+        assertMsg "No milestones pending approval" (milestonesCompleted > 0)
+        let newAmountPaid = amountPaid + milestonePayment
+        let newStatus = if milestonesCompleted >= milestonesTotal
+                        then "Completed"
+                        else "Active"
+        paymentCid <- create PaymentRecord with
+          client = client
+          freelancer = freelancer
+          amount = milestonePayment
+          milestoneNumber = milestonesCompleted
+          timestamp = "2026-02-18T00:00:00Z"
+          projectDescription = description
+        contractCid <- create this with
+          amountPaid = newAmountPaid
+          status = newStatus
+        return (contractCid, paymentCid)
+
+
+-- | Immutable record of a payment. Only visible to the client-freelancer pair.
+template PaymentRecord
+  with
+    client : Party
+    freelancer : Party
+    amount : Decimal
+    milestoneNumber : Int
+    timestamp : Text
+    projectDescription : Text
+  where
+    signatory client, freelancer
+
+
+-- | Aggregated audit summary for the auditor. Shows totals only, no individual details.
+-- The auditor is an observer — they can see the summary but cannot see
+-- any ProjectContract or PaymentRecord.
+template AuditSummary
+  with
+    client : Party
+    auditor : Party
+    totalContractsCount : Int
+    totalAmountPaid : Decimal
+    reportPeriod : Text
+  where
+    signatory client
+    observer auditor
+
+
+-- | Proposal template: Client proposes a contract, Freelancer accepts.
+-- This follows the propose-accept pattern common in Daml.
+-- Only the client and the specific freelancer can see the proposal.
+template ProjectProposal
+  with
+    client : Party
+    freelancer : Party
+    description : Text
+    hourlyRate : Decimal
+    totalBudget : Decimal
+    milestonesTotal : Int
+  where
+    signatory client
+    observer freelancer
+
+    -- Freelancer accepts the proposal, creating a full ProjectContract
+    choice AcceptProposal : ContractId ProjectContract
+      controller freelancer
+      do
+        create ProjectContract with
+          client = client
+          freelancer = freelancer
+          description = description
+          hourlyRate = hourlyRate
+          totalBudget = totalBudget
+          milestonesTotal = milestonesTotal
+          milestonesCompleted = 0
+          amountPaid = 0.0
+          status = "Active"
+
+    -- Freelancer rejects the proposal
+    choice RejectProposal : ()
+      controller freelancer
+      do
+        return ()

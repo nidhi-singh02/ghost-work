@@ -1,0 +1,10 @@
+services:
+  frontend:
+    image: cantonlance-dev
+    container_name: cantonlance-frontend
+    volumes:
+      - ./freelancer-app:/workspace
+    working_dir: /workspace/frontend
+    ports:
+      - "5173:5173"
+    command: npx vite --host 0.0.0.0 --port 5173

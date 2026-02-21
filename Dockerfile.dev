@@ -1,0 +1,54 @@
+# Development container for CantonLance
+# Provides JDK 21, Node.js 20, and Daml SDK 3.4.10
+# Supports both amd64 and arm64 architectures
+
+FROM eclipse-temurin:21-jdk
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    make \
+    unzip \
+    tar \
+    gzip \
+    ca-certificates \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI (for communicating with host Docker)
+# Base image is Ubuntu, so use ubuntu repo (not debian)
+RUN install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && chmod a+r /etc/apt/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli docker-compose-plugin \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Daml SDK 3.4.10 - auto-detect architecture
+RUN ARCH=$(dpkg --print-architecture) \
+    && if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then \
+         SDK_ARCH="linux-aarch64"; \
+       else \
+         SDK_ARCH="linux-x86_64"; \
+       fi \
+    && echo "Downloading Daml SDK for $SDK_ARCH..." \
+    && mkdir -p /tmp/daml-install && cd /tmp/daml-install \
+    && curl -fsSL "https://github.com/digital-asset/daml/releases/download/v3.4.10/daml-sdk-3.4.10-${SDK_ARCH}.tar.gz" -o daml-sdk.tar.gz \
+    && tar xzf daml-sdk.tar.gz \
+    && ls -la /tmp/daml-install/ \
+    && cd /tmp/daml-install/sdk-* \
+    && DAML_HOME=/root/.daml ./install.sh --install-with-custom-version 3.4.10 \
+    && cd / && rm -rf /tmp/daml-install
+
+ENV PATH="/root/.daml/bin:${PATH}"
+
+WORKDIR /workspace
+
+CMD ["/bin/bash"]

@@ -1,0 +1,131 @@
+-- CantonLance — Privacy Model Tests
+-- Demonstrates that Canton's sub-transaction privacy ensures:
+-- 1. Freelancer A cannot see Freelancer B's contract (and vice versa)
+-- 2. Auditor can only see aggregate summaries, not individual deals
+module FreelanceTest where
+
+import Freelance
+import Daml.Script
+import DA.List (head)
+
+-- | Full end-to-end test demonstrating the privacy model
+privacyTest : Script ()
+privacyTest = script do
+  -- Step 1: Allocate parties
+  client <- allocateParty "Client_Acme"
+  freelancerA <- allocateParty "FreelancerA_Alice"
+  freelancerB <- allocateParty "FreelancerB_Bob"
+  auditor <- allocateParty "Auditor_Eve"
+
+  -- Step 2: Client proposes contracts with each freelancer
+  -- These proposals are private: freelancerA cannot see freelancerB's proposal
+  proposalA <- submit client do
+    createCmd ProjectProposal with
+      client = client
+      freelancer = freelancerA
+      description = "Build payment microservice"
+      hourlyRate = 150.0
+      totalBudget = 15000.0
+      milestonesTotal = 3
+
+  proposalB <- submit client do
+    createCmd ProjectProposal with
+      client = client
+      freelancer = freelancerB
+      description = "Design landing page"
+      hourlyRate = 80.0
+      totalBudget = 4000.0
+      milestonesTotal = 2
+
+  -- Step 3: Each freelancer accepts their own proposal
+  contractA <- submit freelancerA do
+    exerciseCmd proposalA AcceptProposal
+
+  contractB <- submit freelancerB do
+    exerciseCmd proposalB AcceptProposal
+
+  -- Step 4: Freelancer A submits a milestone
+  contractA <- submit freelancerA do
+    exerciseCmd contractA SubmitMilestone
+
+  -- Step 5: Client approves Freelancer A's milestone with payment
+  (_, _) <- submit client do
+    exerciseCmd contractA ApproveMilestone with
+      milestonePayment = 5000.0
+
+  -- Step 6: Freelancer B submits a milestone
+  contractB <- submit freelancerB do
+    exerciseCmd contractB SubmitMilestone
+
+  -- Step 7: Client approves Freelancer B's milestone
+  (_, _) <- submit client do
+    exerciseCmd contractB ApproveMilestone with
+      milestonePayment = 2000.0
+
+  -- Step 8: Client creates audit summary for auditor
+  -- The auditor sees ONLY this summary — no individual contracts or payments
+  _ <- submit client do
+    createCmd AuditSummary with
+      client = client
+      auditor = auditor
+      totalContractsCount = 2
+      totalAmountPaid = 7000.0
+      reportPeriod = "2026-Q1"
+
+  -- Step 9: Verify privacy — query contracts as each party
+
+  -- Client should see both project contracts
+  clientContracts <- queryFilter @ProjectContract client
+    (\c -> c.client == client)
+  assertMsg "Client should see 2 active contracts" (length clientContracts == 2)
+
+  -- Client should see both payment records
+  clientPayments <- queryFilter @PaymentRecord client
+    (\p -> p.client == client)
+  assertMsg "Client should see 2 payments" (length clientPayments == 2)
+
+  -- Freelancer A should see ONLY their own contract
+  freelancerAContracts <- queryFilter @ProjectContract freelancerA
+    (\c -> c.freelancer == freelancerA)
+  assertMsg "FreelancerA should see exactly 1 contract" (length freelancerAContracts == 1)
+
+  -- Freelancer A should NOT see Freelancer B's contracts
+  freelancerAAllContracts <- query @ProjectContract freelancerA
+  assertMsg "FreelancerA should see only 1 contract total" (length freelancerAAllContracts == 1)
+
+  -- Freelancer B should see ONLY their own contract
+  freelancerBContracts <- query @ProjectContract freelancerB
+  assertMsg "FreelancerB should see exactly 1 contract" (length freelancerBContracts == 1)
+
+  -- Freelancer A should see ONLY their own payment
+  freelancerAPayments <- query @PaymentRecord freelancerA
+  assertMsg "FreelancerA should see exactly 1 payment" (length freelancerAPayments == 1)
+
+  -- Freelancer B should see ONLY their own payment
+  freelancerBPayments <- query @PaymentRecord freelancerB
+  assertMsg "FreelancerB should see exactly 1 payment" (length freelancerBPayments == 1)
+
+  -- Auditor should see ONLY the audit summary
+  auditSummaries <- query @AuditSummary auditor
+  assertMsg "Auditor should see 1 audit summary" (length auditSummaries == 1)
+
+  -- Auditor should NOT see any project contracts
+  auditorContracts <- query @ProjectContract auditor
+  assertMsg "Auditor should see 0 project contracts" (length auditorContracts == 0)
+
+  -- Auditor should NOT see any payment records
+  auditorPayments <- query @PaymentRecord auditor
+  assertMsg "Auditor should see 0 payment records" (length auditorPayments == 0)
+
+  -- Verify the audit summary has correct data
+  let (_, auditData) = head auditSummaries
+  assertMsg "Audit should show 2 contracts" (auditData.totalContractsCount == 2)
+  assertMsg "Audit should show $7000 paid" (auditData.totalAmountPaid == 7000.0)
+
+  debug "=== ALL PRIVACY TESTS PASSED ==="
+  debug "Client sees: 2 contracts, 2 payments"
+  debug "FreelancerA sees: 1 contract, 1 payment (own only)"
+  debug "FreelancerB sees: 1 contract, 1 payment (own only)"
+  debug "Auditor sees: 1 summary only, 0 contracts, 0 payments"
+
+  return ()
