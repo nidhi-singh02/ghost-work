@@ -1,5 +1,5 @@
--- CantonLance — Private Freelancer Payment Protocol
--- Demonstrates Canton's sub-transaction privacy for freelancer contracts
+-- GhostWork — Private Freelancer Payment Protocol
+-- Built on Canton's sub-transaction privacy for freelancer contracts
 module Freelance where
 
 -- | A private project contract between a Client and a Freelancer.
@@ -15,7 +15,7 @@ template ProjectContract
     milestonesTotal : Int
     milestonesCompleted : Int
     amountPaid : Decimal
-    status : Text  -- "Active", "Completed", "Disputed"
+    status : Text  -- "Active", "Completed"
   where
     signatory client, freelancer
 
@@ -32,6 +32,7 @@ template ProjectContract
     choice ApproveMilestone : (ContractId ProjectContract, ContractId PaymentRecord)
       with
         milestonePayment : Decimal
+        paymentTimestamp : Text
       controller client
       do
         assertMsg "Contract must be Active" (status == "Active")
@@ -47,12 +48,28 @@ template ProjectContract
           freelancer = freelancer
           amount = milestonePayment
           milestoneNumber = milestonesCompleted
-          timestamp = "2026-02-18T00:00:00Z"
+          timestamp = paymentTimestamp
           projectDescription = description
         contractCid <- create this with
           amountPaid = newAmountPaid
           status = newStatus
         return (contractCid, paymentCid)
+
+    -- Client rejects a submitted milestone (sends back for rework)
+    choice RejectMilestone : ContractId ProjectContract
+      controller client
+      do
+        assertMsg "Contract must be Active" (status == "Active")
+        assertMsg "No milestones pending approval" (milestonesCompleted > 0)
+        create this with
+          milestonesCompleted = milestonesCompleted - 1
+
+    -- Client cancels the contract (archives it)
+    choice CancelContract : ()
+      controller client
+      do
+        assertMsg "Contract must be Active" (status == "Active")
+        return ()
 
 
 -- | Immutable record of a payment. Only visible to the client-freelancer pair.

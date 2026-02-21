@@ -1,3 +1,13 @@
+export interface ProjectProposal {
+  contractId: string;
+  client: string;
+  freelancer: string;
+  description: string;
+  hourlyRate: number;
+  totalBudget: number;
+  milestonesTotal: number;
+}
+
 export interface ProjectContract {
   contractId: string;
   client: string;
@@ -8,7 +18,7 @@ export interface ProjectContract {
   milestonesTotal: number;
   milestonesCompleted: number;
   amountPaid: number;
-  status: "Active" | "Completed" | "Disputed";
+  status: "Active" | "Completed";
 }
 
 export interface PaymentRecord {
@@ -30,19 +40,28 @@ export interface AuditSummary {
   reportPeriod: string;
 }
 
-export type PartyRole = "client" | "freelancerA" | "freelancerB" | "auditor";
+/** Role category — used for view routing and color assignment */
+export type PartyRoleCategory = "Client" | "Freelancer" | "Auditor";
+
+/** Preset party keys (the 4 built-in demo accounts) */
+export type PresetPartyRole = "client" | "freelancerA" | "freelancerB" | "auditor";
+
+/** Party role key — string to support both preset and dynamically created parties */
+export type PartyRole = string;
 
 export interface Party {
-  id: PartyRole;
+  id: string;
   name: string;
   displayName: string;
   shortName: string;
   avatar: string;
-  role: string;
+  role: PartyRoleCategory;
   color: string;
+  isPreset?: boolean;
 }
 
-export const PARTIES: Record<PartyRole, Party> = {
+/** The 4 built-in demo parties */
+export const PRESET_PARTIES: Record<PresetPartyRole, Party> = {
   client: {
     id: "client",
     name: "Client_EthFoundation",
@@ -51,6 +70,7 @@ export const PARTIES: Record<PartyRole, Party> = {
     avatar: "EF",
     role: "Client",
     color: "#0d6efd",
+    isPreset: true,
   },
   freelancerA: {
     id: "freelancerA",
@@ -60,6 +80,7 @@ export const PARTIES: Record<PartyRole, Party> = {
     avatar: "N",
     role: "Freelancer",
     color: "#198754",
+    isPreset: true,
   },
   freelancerB: {
     id: "freelancerB",
@@ -69,6 +90,7 @@ export const PARTIES: Record<PartyRole, Party> = {
     avatar: "A",
     role: "Freelancer",
     color: "#6f42c1",
+    isPreset: true,
   },
   auditor: {
     id: "auditor",
@@ -78,8 +100,28 @@ export const PARTIES: Record<PartyRole, Party> = {
     avatar: "E",
     role: "Auditor",
     color: "#dc3545",
+    isPreset: true,
   },
 };
+
+/** Mutable party map — starts with presets, augmented at runtime with dynamic parties */
+export const PARTIES: Record<string, Party> = { ...PRESET_PARTIES };
+
+/** Get a consistent color for a role category */
+export function roleColor(role: PartyRoleCategory): string {
+  switch (role) {
+    case "Client": return "#0d6efd";
+    case "Freelancer": return "#198754";
+    case "Auditor": return "#dc3545";
+  }
+}
+
+/** Generate avatar initials from a display name */
+export function generateAvatar(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.substring(0, 2).toUpperCase();
+}
 
 /** Maps a raw Canton party ID (e.g. "FreelancerA_Nidhi::1220abcd...") to a short display name */
 export function formatPartyName(raw: string): string {

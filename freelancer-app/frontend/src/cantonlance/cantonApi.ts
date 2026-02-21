@@ -12,16 +12,16 @@
 
 import {
   ProjectContract,
+  ProjectProposal,
   PaymentRecord,
   AuditSummary,
-  PartyRole,
 } from "./types";
 
 // ── API Request/Response types for the proof panel ────────────────────
 
 export interface ApiCall {
   timestamp: string;
-  party: PartyRole;
+  party: string;
   method: string;
   endpoint: string;
   requestBody: Record<string, unknown> | null;
@@ -41,7 +41,7 @@ export interface DevNetPartyConfig {
 export interface DevNetConfig {
   mode: "devnet" | "local";
   ledgerApiUrl: string;
-  parties: Record<PartyRole, DevNetPartyConfig>;
+  parties: Record<string, DevNetPartyConfig>;
   darPackageId: string;
   deployedAt: string;
   packageId?: string;  // Resolved at runtime from DAR
@@ -110,14 +110,7 @@ export class CantonDevNetClient {
       const pkgData = pkgResponse as { packageIds?: string[] };
       const packageIds = pkgData.packageIds || [];
 
-      // Try the package name prefix syntax first
-      // If that doesn't work, we'll need to check each package
-      // For now, store the most recently uploaded package that contains our templates
-      // We can detect this by trying a query and checking template IDs in the response
       if (packageIds.length > 0) {
-        // The sandbox includes many stdlib packages. Our package is typically
-        // not in the default set, so it's one of the extras.
-        // We'll resolve it on first successful query.
         console.log(`[CantonAPI] ${packageIds.length} packages on ledger`);
       }
     } catch (err) {
@@ -132,7 +125,7 @@ export class CantonDevNetClient {
     method: string,
     endpoint: string,
     body: Record<string, unknown> | null,
-    party: PartyRole
+    party: string
   ): Promise<unknown> {
     const partyConfig = this.config.parties[party];
     const url = `${this.config.ledgerApiUrl}${endpoint}`;
@@ -166,7 +159,7 @@ export class CantonDevNetClient {
    * Build a JsCommands object with the right auth fields for the mode.
    */
   private buildCommands(
-    party: PartyRole,
+    party: string,
     commands: Record<string, unknown>[],
     opts: { workflowId: string; commandId: string; submissionId: string }
   ): Record<string, unknown> {
@@ -191,7 +184,7 @@ export class CantonDevNetClient {
    * Submit commands and wait for the full transaction response (includes contract IDs).
    */
   private async submitForTransaction(
-    party: PartyRole,
+    party: string,
     commands: Record<string, unknown>[],
     opts: { workflowId: string; commandId: string; submissionId: string }
   ): Promise<Record<string, unknown>> {
@@ -210,7 +203,7 @@ export class CantonDevNetClient {
    * Submit commands and wait for completion only (no transaction details needed).
    */
   private async submitAndWait(
-    party: PartyRole,
+    party: string,
     commands: Record<string, unknown>[],
     opts: { workflowId: string; commandId: string; submissionId: string }
   ): Promise<Record<string, unknown>> {
@@ -228,7 +221,7 @@ export class CantonDevNetClient {
   /**
    * Get the current ledger end offset.
    */
-  private async getLedgerEnd(party: PartyRole): Promise<number> {
+  private async getLedgerEnd(party: string): Promise<number> {
     const result = await this.apiRequestRaw(
       "GET",
       "/v2/state/ledger-end",
@@ -242,8 +235,9 @@ export class CantonDevNetClient {
    * Query active contracts visible to a specific party.
    * Each party sees ONLY contracts where they are a signatory or observer.
    */
-  async queryAsParty(party: PartyRole): Promise<{
+  async queryAsParty(party: string): Promise<{
     contracts: ProjectContract[];
+    proposals: ProjectProposal[];
     payments: PaymentRecord[];
     auditSummaries: AuditSummary[];
     apiCall: ApiCall;
@@ -286,6 +280,7 @@ export class CantonDevNetClient {
       const entries = Array.isArray(response) ? response : [];
 
       const contracts: ProjectContract[] = [];
+      const proposals: ProjectProposal[] = [];
       const payments: PaymentRecord[] = [];
       const auditSummaries: AuditSummary[] = [];
 
@@ -307,7 +302,17 @@ export class CantonDevNetClient {
           console.log(`[CantonAPI] Resolved package ID: ${this.resolvedPackageId}`);
         }
 
-        if (tplId.includes("ProjectContract")) {
+        if (tplId.includes("ProjectProposal")) {
+          proposals.push({
+            contractId,
+            client: String(p.client || ""),
+            freelancer: String(p.freelancer || ""),
+            description: String(p.description || ""),
+            hourlyRate: Number(parseFloat(p.hourlyRate) || 0),
+            totalBudget: Number(parseFloat(p.totalBudget) || 0),
+            milestonesTotal: Number(parseInt(p.milestonesTotal) || 0),
+          });
+        } else if (tplId.includes("ProjectContract")) {
           contracts.push({
             contractId,
             client: String(p.client || ""),
@@ -351,6 +356,7 @@ export class CantonDevNetClient {
         requestBody,
         responseBody: {
           totalContracts: entries.length,
+          proposals: proposals.length,
           projectContracts: contracts.length,
           paymentRecords: payments.length,
           auditSummaries: auditSummaries.length,
@@ -362,7 +368,7 @@ export class CantonDevNetClient {
       };
 
       this.logApiCall(apiCall);
-      return { contracts, payments, auditSummaries, apiCall };
+      return { contracts, proposals, payments, auditSummaries, apiCall };
     } catch (err) {
       const apiCall: ApiCall = {
         timestamp: new Date().toISOString(),
@@ -383,20 +389,21 @@ export class CantonDevNetClient {
   }
 
   /**
-   * Create a ProjectContract via propose-accept pattern.
+   * Client creates a ProjectProposal (no auto-accept).
+   * The freelancer must separately accept or reject it.
    */
-  async createContract(
-    freelancerRole: "freelancerA" | "freelancerB",
+  async createProposal(
+    clientRole: string,
+    freelancerRole: string,
     description: string,
     hourlyRate: number,
     totalBudget: number,
     milestonesTotal: number
   ): Promise<{ contractId: string; apiCall: ApiCall }> {
-    const clientParty = this.config.parties.client.partyId;
+    const clientParty = this.config.parties[clientRole].partyId;
     const freelancerParty = this.config.parties[freelancerRole].partyId;
 
-    // Step 1: Client creates a ProjectProposal
-    const proposalCommands = [
+    const cmds = [
       {
         CreateCommand: {
           templateId: this.templateId("ProjectProposal"),
@@ -411,32 +418,41 @@ export class CantonDevNetClient {
         },
       },
     ];
-    const proposalOpts = {
+    const opts = {
       workflowId: "cantonlance-proposal",
       commandId: `create-proposal-${Date.now()}`,
       submissionId: `proposal-${Date.now()}`,
     };
 
-    const proposalResponse = await this.submitForTransaction(
-      "client", proposalCommands, proposalOpts
-    );
+    const response = await this.submitForTransaction(clientRole, cmds, opts);
+    const contractId = this.extractContractId(response);
 
-    const proposalContractId = this.extractContractId(proposalResponse);
-
-    const proposalApiCall: ApiCall = {
+    const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
-      party: "client",
+      party: clientRole,
       method: "POST",
       endpoint: "/v2/commands/submit-and-wait-for-transaction",
-      requestBody: { commands: this.buildCommands("client", proposalCommands, proposalOpts) },
-      responseBody: proposalResponse,
+      requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
+      responseBody: {
+        ...response,
+        note: `Proposal sent to ${freelancerParty}. Awaiting freelancer acceptance.`,
+      },
       responseCount: 1,
-      description: `Client created proposal for ${freelancerRole}`,
+      description: `${clientRole} created proposal for ${freelancerRole}`,
     };
-    this.logApiCall(proposalApiCall);
+    this.logApiCall(apiCall);
 
-    // Step 2: Freelancer accepts the proposal
-    const acceptCommands = [
+    return { contractId, apiCall };
+  }
+
+  /**
+   * Freelancer accepts a proposal — creates a ProjectContract.
+   */
+  async acceptProposal(
+    proposalContractId: string,
+    freelancerRole: string
+  ): Promise<{ contractId: string; apiCall: ApiCall }> {
+    const cmds = [
       {
         ExerciseCommand: {
           templateId: this.templateId("ProjectProposal"),
@@ -446,34 +462,71 @@ export class CantonDevNetClient {
         },
       },
     ];
-    const acceptOpts = {
+    const opts = {
       workflowId: "cantonlance-accept",
       commandId: `accept-proposal-${Date.now()}`,
       submissionId: `accept-${Date.now()}`,
     };
 
-    const acceptResponse = await this.submitForTransaction(
-      freelancerRole, acceptCommands, acceptOpts
-    );
+    const response = await this.submitForTransaction(freelancerRole, cmds, opts);
+    const contractId = this.extractContractId(response);
 
-    const contractId = this.extractContractId(acceptResponse);
-
-    const acceptApiCall: ApiCall = {
+    const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: freelancerRole,
       method: "POST",
       endpoint: "/v2/commands/submit-and-wait-for-transaction",
-      requestBody: { commands: this.buildCommands(freelancerRole, acceptCommands, acceptOpts) },
+      requestBody: { commands: this.buildCommands(freelancerRole, cmds, opts) },
       responseBody: {
-        ...acceptResponse,
-        note: `Contract created between ${clientParty} and ${freelancerParty}. Only these parties can see the data.`,
+        ...response,
+        note: "Proposal accepted — ProjectContract created. Only signatory parties can see it.",
       },
       responseCount: 1,
       description: `${freelancerRole} accepted proposal → ProjectContract created`,
     };
-    this.logApiCall(acceptApiCall);
+    this.logApiCall(apiCall);
 
-    return { contractId, apiCall: acceptApiCall };
+    return { contractId, apiCall };
+  }
+
+  /**
+   * Freelancer rejects a proposal — archives it.
+   */
+  async rejectProposal(
+    proposalContractId: string,
+    freelancerRole: string
+  ): Promise<{ apiCall: ApiCall }> {
+    const cmds = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectProposal"),
+          contractId: proposalContractId,
+          choice: "RejectProposal",
+          choiceArgument: {},
+        },
+      },
+    ];
+    const opts = {
+      workflowId: "cantonlance-reject-proposal",
+      commandId: `reject-proposal-${Date.now()}`,
+      submissionId: `reject-proposal-${Date.now()}`,
+    };
+
+    const response = await this.submitAndWait(freelancerRole, cmds, opts);
+
+    const apiCall: ApiCall = {
+      timestamp: new Date().toISOString(),
+      party: freelancerRole,
+      method: "POST",
+      endpoint: "/v2/commands/submit-and-wait",
+      requestBody: { commands: this.buildCommands(freelancerRole, cmds, opts) },
+      responseBody: { ...response, note: "Proposal rejected and archived." },
+      responseCount: 1,
+      description: `${freelancerRole} rejected proposal ${proposalContractId.slice(0, 16)}...`,
+    };
+    this.logApiCall(apiCall);
+
+    return { apiCall };
   }
 
   /**
@@ -481,7 +534,7 @@ export class CantonDevNetClient {
    */
   async submitMilestone(
     contractId: string,
-    freelancerRole: PartyRole
+    freelancerRole: string
   ): Promise<{ apiCall: ApiCall }> {
     const cmds = [
       {
@@ -521,7 +574,8 @@ export class CantonDevNetClient {
    */
   async approveMilestone(
     contractId: string,
-    payment: number
+    payment: number,
+    clientRole: string
   ): Promise<{ apiCall: ApiCall }> {
     const cmds = [
       {
@@ -531,6 +585,7 @@ export class CantonDevNetClient {
           choice: "ApproveMilestone",
           choiceArgument: {
             milestonePayment: String(payment),
+            paymentTimestamp: new Date().toISOString(),
           },
         },
       },
@@ -541,17 +596,97 @@ export class CantonDevNetClient {
       submissionId: `approve-${Date.now()}`,
     };
 
-    const response = await this.submitForTransaction("client", cmds, opts);
+    const response = await this.submitForTransaction(clientRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
-      party: "client",
+      party: clientRole,
       method: "POST",
       endpoint: "/v2/commands/submit-and-wait-for-transaction",
-      requestBody: { commands: this.buildCommands("client", cmds, opts) },
+      requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
       responseBody: response,
       responseCount: 1,
-      description: `Client approved milestone — $${payment} payment`,
+      description: `${clientRole} approved milestone — $${payment} payment`,
+    };
+    this.logApiCall(apiCall);
+
+    return { apiCall };
+  }
+
+  /**
+   * Client rejects a submitted milestone — sends it back for rework.
+   */
+  async rejectMilestone(
+    contractId: string,
+    clientRole: string
+  ): Promise<{ apiCall: ApiCall }> {
+    const cmds = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectContract"),
+          contractId,
+          choice: "RejectMilestone",
+          choiceArgument: {},
+        },
+      },
+    ];
+    const opts = {
+      workflowId: "cantonlance-reject-milestone",
+      commandId: `reject-milestone-${Date.now()}`,
+      submissionId: `reject-milestone-${Date.now()}`,
+    };
+
+    const response = await this.submitForTransaction(clientRole, cmds, opts);
+
+    const apiCall: ApiCall = {
+      timestamp: new Date().toISOString(),
+      party: clientRole,
+      method: "POST",
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
+      responseBody: response,
+      responseCount: 1,
+      description: `${clientRole} rejected milestone on ${contractId.slice(0, 16)}...`,
+    };
+    this.logApiCall(apiCall);
+
+    return { apiCall };
+  }
+
+  /**
+   * Client cancels an active contract — archives it.
+   */
+  async cancelContract(
+    contractId: string,
+    clientRole: string
+  ): Promise<{ apiCall: ApiCall }> {
+    const cmds = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectContract"),
+          contractId,
+          choice: "CancelContract",
+          choiceArgument: {},
+        },
+      },
+    ];
+    const opts = {
+      workflowId: "cantonlance-cancel",
+      commandId: `cancel-contract-${Date.now()}`,
+      submissionId: `cancel-${Date.now()}`,
+    };
+
+    const response = await this.submitAndWait(clientRole, cmds, opts);
+
+    const apiCall: ApiCall = {
+      timestamp: new Date().toISOString(),
+      party: clientRole,
+      method: "POST",
+      endpoint: "/v2/commands/submit-and-wait",
+      requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
+      responseBody: { ...response, note: "Contract cancelled and archived." },
+      responseCount: 1,
+      description: `${clientRole} cancelled contract ${contractId.slice(0, 16)}...`,
     };
     this.logApiCall(apiCall);
 
@@ -563,10 +698,13 @@ export class CantonDevNetClient {
    */
   async generateAuditSummary(
     totalContractsCount: number,
-    totalAmountPaid: number
+    totalAmountPaid: number,
+    clientRole: string,
+    auditorRole: string,
+    reportPeriod: string
   ): Promise<{ apiCall: ApiCall }> {
-    const clientParty = this.config.parties.client.partyId;
-    const auditorParty = this.config.parties.auditor.partyId;
+    const clientParty = this.config.parties[clientRole].partyId;
+    const auditorParty = this.config.parties[auditorRole].partyId;
 
     const cmds = [
       {
@@ -577,7 +715,7 @@ export class CantonDevNetClient {
             auditor: auditorParty,
             totalContractsCount,
             totalAmountPaid: String(totalAmountPaid),
-            reportPeriod: "2026-Q1",
+            reportPeriod,
           },
         },
       },
@@ -588,25 +726,92 @@ export class CantonDevNetClient {
       submissionId: `audit-${Date.now()}`,
     };
 
-    const response = await this.submitAndWait("client", cmds, opts);
+    const response = await this.submitAndWait(clientRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
-      party: "client",
+      party: clientRole,
       method: "POST",
       endpoint: "/v2/commands/submit-and-wait",
-      requestBody: this.buildCommands("client", cmds, opts),
+      requestBody: this.buildCommands(clientRole, cmds, opts),
       responseBody: {
         ...response,
         distributedTo: [clientParty, auditorParty],
         note: "Auditor can see aggregate totals only. No individual contracts or payments.",
       },
       responseCount: 1,
-      description: `Audit summary created — visible to client + auditor only`,
+      description: `Audit summary (${reportPeriod}) created — visible to ${clientRole} + ${auditorRole} only`,
     };
     this.logApiCall(apiCall);
 
     return { apiCall };
+  }
+
+  // ── Dynamic Party Management ────────────────────────────────────────
+
+  /**
+   * Allocate a new Canton party on the ledger.
+   * POST /v2/parties with partyIdHint and displayName.
+   * Returns the full Canton party ID (e.g. "MyName_123::1220abcd...").
+   */
+  async allocateParty(hint: string, displayName: string): Promise<string> {
+    const url = `${this.config.ledgerApiUrl}/v2/parties`;
+    const body = { partyIdHint: hint, displayName };
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Allocate party failed ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    // Canton v2 returns { partyDetails: { party: "..." } }
+    const partyId = data?.partyDetails?.party || data?.partyId || data?.party_id;
+    if (!partyId) throw new Error("No partyId in allocate response");
+    return partyId;
+  }
+
+  /**
+   * Create a Canton user with actAs/readAs rights for the given party.
+   * POST /v2/users.
+   */
+  async createUser(userId: string, partyId: string): Promise<void> {
+    const url = `${this.config.ledgerApiUrl}/v2/users`;
+    const body = {
+      user: {
+        id: userId,
+        primaryParty: partyId,
+        isDeactivated: false,
+        identityProviderId: "",
+      },
+      rights: [
+        { kind: { CanActAs: { value: { party: partyId } } } },
+        { kind: { CanReadAs: { value: { party: partyId } } } },
+      ],
+    };
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Create user failed ${response.status}: ${errText}`);
+    }
+  }
+
+  /**
+   * Register a new party in the runtime config so subsequent API calls can use it.
+   */
+  registerParty(key: string, config: DevNetPartyConfig): void {
+    this.config.parties[key] = config;
   }
 
   /**

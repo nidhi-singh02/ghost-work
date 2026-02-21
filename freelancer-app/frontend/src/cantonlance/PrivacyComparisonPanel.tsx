@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStore } from "./store";
-import { PARTIES, PartyRole } from "./types";
+import { PRESET_PARTIES } from "./types";
 
 const PrivacyComparisonPanel: React.FC = () => {
   const { visibleContracts } = useStore();
@@ -8,7 +8,7 @@ const PrivacyComparisonPanel: React.FC = () => {
 
   if (visibleContracts.length === 0) return null;
 
-  const parties: PartyRole[] = ["client", "freelancerA", "freelancerB", "auditor"];
+  const parties = ["client", "freelancerA", "freelancerB", "auditor"] as const;
 
   return (
     <div style={{ marginTop: "16px" }}>
@@ -47,9 +47,9 @@ const PrivacyComparisonPanel: React.FC = () => {
             backgroundColor: "#fff",
           }}
         >
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+          <div className="gw-privacy-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
             {parties.map((role) => {
-              const party = PARTIES[role];
+              const party = PRESET_PARTIES[role];
               return (
                 <div
                   key={role}
@@ -92,7 +92,7 @@ const PrivacyComparisonPanel: React.FC = () => {
   );
 };
 
-const DESCRIPTIONS: Record<PartyRole, { contracts: string; payments: string; audits: string; contractsBlocked: boolean; paymentsBlocked: boolean; auditsBlocked: boolean }> = {
+const DESCRIPTIONS: Record<string, { contracts: string; payments: string; audits: string; contractsBlocked: boolean; paymentsBlocked: boolean; auditsBlocked: boolean }> = {
   client: {
     contracts: "Sees ALL contracts (signatory)",
     payments: "Sees ALL payments (signatory)",
@@ -127,7 +127,7 @@ const DESCRIPTIONS: Record<PartyRole, { contracts: string; payments: string; aud
   },
 };
 
-const PartyNodeDescription: React.FC<{ role: PartyRole }> = ({ role }) => {
+const PartyNodeDescription: React.FC<{ role: string }> = ({ role }) => {
   const desc = DESCRIPTIONS[role];
 
   const itemStyle = (blocked: boolean): React.CSSProperties => ({

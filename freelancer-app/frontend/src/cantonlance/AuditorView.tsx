@@ -7,7 +7,7 @@ const AuditorView: React.FC = () => {
   return (
     <div>
       {/* ── Privacy Metrics ────────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}>
+      <div className="gw-auditor-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}>
         <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #dc3545" }}>
           <div className="gw-stat-label">Contracts Visible</div>
           <div className="gw-stat-value">{visibleContracts.length}</div>
@@ -31,12 +31,12 @@ const AuditorView: React.FC = () => {
       {visibleAuditSummaries.length === 0 ? (
         <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed", borderColor: "#dc3545" }}>
           <div style={{ fontSize: "0.9rem", opacity: 0.3, marginBottom: "8px", fontWeight: 600 }}>No data</div>
-          <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Audit Summaries Yet</h6>
+          <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Audit Reports Yet</h6>
           <p style={{ fontSize: "0.82rem", color: "#5e6d55", margin: "0 0 8px" }}>
-            This node has received zero individual contracts or payments.
+            Audit summaries appear here when a client generates one.
           </p>
           <p style={{ fontSize: "0.78rem", color: "#5e6d55", margin: 0 }}>
-            Switch to <strong>Eth Foundation</strong> from the account menu and click &quot;Generate Audit&quot;.
+            You&apos;ll see aggregate totals only &mdash; never individual contract details.
           </p>
         </div>
       ) : (

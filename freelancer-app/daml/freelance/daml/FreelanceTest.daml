@@ -52,6 +52,7 @@ privacyTest = script do
   (_, _) <- submit client do
     exerciseCmd contractA ApproveMilestone with
       milestonePayment = 5000.0
+      paymentTimestamp = "2026-02-20T12:00:00Z"
 
   -- Step 6: Freelancer B submits a milestone
   contractB <- submit freelancerB do
@@ -61,6 +62,7 @@ privacyTest = script do
   (_, _) <- submit client do
     exerciseCmd contractB ApproveMilestone with
       milestonePayment = 2000.0
+      paymentTimestamp = "2026-02-20T13:00:00Z"
 
   -- Step 8: Client creates audit summary for auditor
   -- The auditor sees ONLY this summary — no individual contracts or payments

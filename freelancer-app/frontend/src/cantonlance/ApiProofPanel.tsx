@@ -62,7 +62,7 @@ const ApiProofPanel: React.FC = () => {
           }}
         >
           {apiCalls.map((call, i) => {
-            const party = PARTIES[call.party];
+            const party = PARTIES[call.party] || { avatar: "?", color: "#666", shortName: call.party };
             const isExpanded = expanded === i;
             return (
               <div
@@ -105,7 +105,7 @@ const ApiProofPanel: React.FC = () => {
                 </div>
                 {isExpanded && (
                   <div style={{ padding: "0 16px 14px" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="gw-api-detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                       <div>
                         <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", marginBottom: "6px" }}>
                           Request

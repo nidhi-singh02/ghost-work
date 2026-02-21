@@ -7,7 +7,8 @@ import ApiProofPanel from "./ApiProofPanel";
 import PrivacyComparisonPanel from "./PrivacyComparisonPanel";
 import ToastNotifications from "./ToastNotifications";
 import DemoGuide from "./DemoGuide";
-import { PARTIES, PartyRole } from "./types";
+import CreateAccountModal from "./CreateAccountModal";
+import { PRESET_PARTIES, PartyRoleCategory } from "./types";
 
 /* ── Global Styles ──────────────────────────────────────────────── */
 
@@ -200,16 +201,43 @@ const GlobalStyles: React.FC = () => (
       0%, 100% { box-shadow: 0 0 0 0 rgba(20,168,0,0.4); }
       50% { box-shadow: 0 0 0 8px rgba(20,168,0,0); }
     }
+    @keyframes gw-spin {
+      to { transform: rotate(360deg); }
+    }
+    /* ── Responsive breakpoints ─────────────────────────── */
+    @media (max-width: 768px) {
+      .gw-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .gw-form-grid-2 { grid-template-columns: 1fr !important; }
+      .gw-form-grid-3 { grid-template-columns: 1fr !important; }
+      .gw-privacy-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .gw-api-detail-grid { grid-template-columns: 1fr !important; }
+      .gw-milestone-actions { flex-wrap: wrap; }
+      .gw-action-bar { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
+      .gw-action-bar > div { justify-content: center; }
+      .gw-auditor-metrics { grid-template-columns: 1fr !important; }
+      .gw-navbar .container { padding-left: 12px !important; padding-right: 12px !important; }
+      .gw-dropdown { min-width: 240px !important; right: -8px !important; }
+    }
+    @media (max-width: 480px) {
+      .gw-stats-grid { grid-template-columns: 1fr !important; }
+      .gw-privacy-grid { grid-template-columns: 1fr !important; }
+    }
   `}</style>
 );
 
 /* ── Account Switcher ──────────────────────────────────────────── */
 
 const AccountSwitcher: React.FC = () => {
-  const { activeParty, setActiveParty } = useStore();
+  const { activeParty, setActiveParty, allParties } = useStore();
   const [open, setOpen] = useState(false);
-  const party = PARTIES[activeParty];
-  const partyOrder: PartyRole[] = ["client", "freelancerA", "freelancerB", "auditor"];
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const party = allParties[activeParty] || PRESET_PARTIES.client;
+
+  // Preset parties first, then dynamic
+  const presetOrder = ["client", "freelancerA", "freelancerB", "auditor"];
+  const dynamicKeys = Object.keys(allParties).filter((k) => !presetOrder.includes(k));
+  const partyOrder = [...presetOrder, ...dynamicKeys];
 
   return (
     <div style={{ position: "relative" }}>
@@ -222,20 +250,22 @@ const AccountSwitcher: React.FC = () => {
         <>
           <div style={{ position: "fixed", inset: 0, zIndex: 1059 }} onClick={() => setOpen(false)} />
           <div className="gw-dropdown">
+            {/* Test Accounts section */}
             <div style={{ padding: "12px 16px 8px", borderBottom: "1px solid #e0e0e0" }}>
               <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Switch Account
+                Test Accounts
               </span>
             </div>
-            {partyOrder.map((role) => {
-              const p = PARTIES[role];
-              const isActive = role === activeParty;
+            {presetOrder.map((key) => {
+              const p = allParties[key];
+              if (!p) return null;
+              const isActive = key === activeParty;
               return (
                 <button
-                  key={role}
+                  key={key}
                   className={`gw-dropdown-item${isActive ? " active" : ""}`}
-                  onClick={() => { setActiveParty(role); setOpen(false); }}
-                  data-gw-id={`party-${role}`}
+                  onClick={() => { setActiveParty(key); setOpen(false); }}
+                  data-gw-id={`party-${key}`}
                 >
                   <div className="gw-avatar-sm" style={{ background: p.color }}>{p.avatar}</div>
                   <div>
@@ -246,9 +276,50 @@ const AccountSwitcher: React.FC = () => {
                 </button>
               );
             })}
+            {/* Dynamic accounts section */}
+            {dynamicKeys.length > 0 && (
+              <>
+                <div style={{ padding: "12px 16px 8px", borderTop: "1px solid #e0e0e0" }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    Your Accounts
+                  </span>
+                </div>
+                {dynamicKeys.map((key) => {
+                  const p = allParties[key];
+                  if (!p) return null;
+                  const isActive = key === activeParty;
+                  return (
+                    <button
+                      key={key}
+                      className={`gw-dropdown-item${isActive ? " active" : ""}`}
+                      onClick={() => { setActiveParty(key); setOpen(false); }}
+                      data-gw-id={`party-${key}`}
+                    >
+                      <div className="gw-avatar-sm" style={{ background: p.color }}>{p.avatar}</div>
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{p.shortName}</div>
+                        <div style={{ fontSize: "0.72rem", color: "#5e6d55" }}>{p.role}</div>
+                      </div>
+                      {isActive && <span style={{ marginLeft: "auto", color: "#14A800", fontWeight: 600, fontSize: "0.72rem" }}>Active</span>}
+                    </button>
+                  );
+                })}
+              </>
+            )}
+            {/* Create Account button */}
+            <div style={{ borderTop: "1px solid #e0e0e0", padding: "8px 12px" }}>
+              <button
+                className="gw-btn-outline"
+                style={{ width: "100%", fontSize: "0.8rem", padding: "6px 14px" }}
+                onClick={() => { setOpen(false); setShowCreateModal(true); }}
+              >
+                + Create Account
+              </button>
+            </div>
           </div>
         </>
       )}
+      {showCreateModal && <CreateAccountModal onClose={() => setShowCreateModal(false)} />}
     </div>
   );
 };
@@ -306,15 +377,15 @@ const EnvironmentSelector: React.FC = () => {
 /* ── Context Bar ───────────────────────────────────────────────── */
 
 const ContextBar: React.FC = () => {
-  const { activeParty, isConnected } = useStore();
+  const { activeParty, isConnected, allParties } = useStore();
   if (!isConnected) return null;
 
-  const party = PARTIES[activeParty];
-  const descriptions: Record<PartyRole, string> = {
-    client: "You see all contracts and payments you've created",
-    freelancerA: "You only see your own contracts \u2014 other freelancers' data never reaches this node",
-    freelancerB: "You only see your own contracts \u2014 other freelancers' data never reaches this node",
-    auditor: "You see aggregate totals only \u2014 zero individual contracts, rates, or freelancer names",
+  const party = allParties[activeParty] || PRESET_PARTIES.client;
+
+  const descriptions: Record<PartyRoleCategory, string> = {
+    Client: "You see all contracts and payments you've created",
+    Freelancer: "You only see your own contracts \u2014 other freelancers' data never reaches this node",
+    Auditor: "You see aggregate totals only \u2014 zero individual contracts, rates, or freelancer names",
   };
 
   return (
@@ -326,7 +397,7 @@ const ContextBar: React.FC = () => {
     }}>
       <span>
         <strong style={{ color: party.color }}>{party.shortName}</strong>
-        <span style={{ color: "#5e6d55", marginLeft: "6px" }}>{descriptions[activeParty]}</span>
+        <span style={{ color: "#5e6d55", marginLeft: "6px" }}>{descriptions[party.role]}</span>
       </span>
     </div>
   );
@@ -382,8 +453,80 @@ const HeroSection: React.FC = () => {
 
 /* ── App Content ───────────────────────────────────────────────── */
 
+/* ── Not-Connected Landing ─────────────────────────────────────── */
+
+const NotConnectedLanding: React.FC<{ isLoading: boolean; error: string | null }> = ({ isLoading, error }) => (
+  <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f9fafb" }}>
+    <div style={{ maxWidth: "480px", textAlign: "center", padding: "40px 24px" }}>
+      <div style={{ fontSize: "2rem", fontWeight: 700, color: "#001e00", marginBottom: "4px" }}>GhostWork</div>
+      <div style={{ fontSize: "0.85rem", color: "#5e6d55", marginBottom: "32px" }}>Private Freelancer Platform on Canton</div>
+
+      {isLoading ? (
+        <div className="gw-card-static" style={{ padding: "40px 32px" }}>
+          <div style={{
+            width: "36px", height: "36px", border: "3px solid #e0e0e0", borderTopColor: "#14A800",
+            borderRadius: "50%", animation: "gw-spin 0.8s linear infinite", margin: "0 auto 16px",
+          }} />
+          <div style={{ fontWeight: 600, color: "#001e00", marginBottom: "4px" }}>Connecting to Canton Ledger...</div>
+          <div style={{ fontSize: "0.82rem", color: "#5e6d55" }}>Looking for local sandbox or DevNet</div>
+        </div>
+      ) : (
+        <div className="gw-card-static" style={{ padding: "32px", textAlign: "left" }}>
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <div style={{
+              width: "48px", height: "48px", borderRadius: "50%", background: "#fef2f2",
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              fontSize: "1.2rem", marginBottom: "8px",
+            }}>!</div>
+            <div style={{ fontWeight: 600, color: "#001e00", fontSize: "1rem" }}>Not Connected</div>
+            <div style={{ fontSize: "0.82rem", color: "#5e6d55", marginTop: "4px" }}>
+              {error || "Could not find a Canton ledger configuration."}
+            </div>
+          </div>
+
+          <div style={{
+            background: "#f9fafb", borderRadius: "8px", padding: "16px",
+            fontSize: "0.82rem", lineHeight: 1.8, marginBottom: "20px",
+          }}>
+            <div style={{ fontWeight: 600, color: "#001e00", marginBottom: "8px" }}>Quick Start</div>
+            <div style={{ fontFamily: "monospace", fontSize: "0.78rem", color: "#5e6d55" }}>
+              <div>1. <code style={{ background: "#e0e0e0", padding: "2px 6px", borderRadius: "4px" }}>docker compose up -d</code></div>
+              <div>2. <code style={{ background: "#e0e0e0", padding: "2px 6px", borderRadius: "4px" }}>bash setup-local.sh</code></div>
+              <div>3. Refresh this page</div>
+            </div>
+          </div>
+
+          <button
+            className="gw-btn-primary"
+            style={{ width: "100%", padding: "10px" }}
+            onClick={() => window.location.reload()}
+          >
+            Retry Connection
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+/* ── App Content ───────────────────────────────────────────────── */
+
 const AppContent: React.FC = () => {
-  const { activeParty, isLoading, isConnected } = useStore();
+  const { activeParty, isLoading, isConnected, configsLoaded, connectionError, allParties } = useStore();
+
+  // Determine which view to show based on role category
+  const activePartyInfo = allParties[activeParty];
+  const roleCategory: PartyRoleCategory = activePartyInfo?.role || "Client";
+
+  // Not connected state
+  if (!isConnected) {
+    return (
+      <div>
+        <GlobalStyles />
+        <NotConnectedLanding isLoading={!configsLoaded} error={connectionError} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -394,10 +537,15 @@ const AppContent: React.FC = () => {
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "#001e00" }}>GhostWork</span>
+            {/* Green connection indicator */}
+            <span style={{
+              width: "8px", height: "8px", borderRadius: "50%", background: "#14A800",
+              display: "inline-block", boxShadow: "0 0 0 2px rgba(20,168,0,0.2)",
+            }} title="Connected to Canton" />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {isConnected && <EnvironmentSelector />}
-            {isConnected && <AccountSwitcher />}
+            <EnvironmentSelector />
+            <AccountSwitcher />
           </div>
         </div>
       </nav>
@@ -415,9 +563,9 @@ const AppContent: React.FC = () => {
         )}
 
         <div>
-          {activeParty === "client" && <ClientView />}
-          {(activeParty === "freelancerA" || activeParty === "freelancerB") && <FreelancerView />}
-          {activeParty === "auditor" && <AuditorView />}
+          {roleCategory === "Client" && <ClientView />}
+          {roleCategory === "Freelancer" && <FreelancerView />}
+          {roleCategory === "Auditor" && <AuditorView />}
         </div>
 
         <PrivacyComparisonPanel />

@@ -3,7 +3,7 @@ import { useStore } from "./store";
 import { PARTIES, formatPartyName } from "./types";
 
 const FreelancerView: React.FC = () => {
-  const { activeParty, visibleContracts, visiblePayments, submitMilestone, loadingAction } = useStore();
+  const { activeParty, visibleContracts, visibleProposals, visiblePayments, submitMilestone, acceptProposal, rejectProposal, loadingAction } = useStore();
   const partyInfo = PARTIES[activeParty];
 
   // Aggregate earnings
@@ -42,19 +42,75 @@ const FreelancerView: React.FC = () => {
         </div>
       )}
 
+      {/* ── Incoming Proposals ────────────────────────────── */}
+      {visibleProposals.length > 0 && (
+        <div style={{ marginBottom: "24px" }}>
+          <div className="gw-section-title">Incoming Proposals ({visibleProposals.length})</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {visibleProposals.map((proposal) => (
+              <div key={proposal.contractId} className="gw-card" style={{ padding: "20px", borderLeft: `3px solid #f59e0b` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#001e00" }}>{proposal.description}</div>
+                    <div style={{ fontSize: "0.8rem", color: "#5e6d55", marginTop: "2px" }}>
+                      From: {formatPartyName(proposal.client)}
+                    </div>
+                  </div>
+                  <span className="gw-status-pill" style={{ background: "#fffbeb", color: "#92400e" }}>
+                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", display: "inline-block", background: "#f59e0b" }} />
+                    Pending
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: "24px", fontSize: "0.82rem", color: "#5e6d55", marginBottom: "16px" }}>
+                  <span><strong style={{ color: "#001e00" }}>${proposal.hourlyRate}</strong>/hr</span>
+                  <span><strong style={{ color: "#001e00" }}>${proposal.totalBudget.toLocaleString()}</strong> budget</span>
+                  <span><strong style={{ color: "#001e00" }}>{proposal.milestonesTotal}</strong> milestones</span>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+                  <button
+                    className="gw-btn-secondary"
+                    style={{ padding: "6px 16px", fontSize: "0.8rem" }}
+                    disabled={loadingAction === `rejectProposal:${proposal.contractId}`}
+                    onClick={() => rejectProposal(proposal.contractId)}
+                  >
+                    {loadingAction === `rejectProposal:${proposal.contractId}` ? "Declining..." : "Decline"}
+                  </button>
+                  <button
+                    className="gw-btn-primary"
+                    style={{ padding: "6px 16px", fontSize: "0.8rem" }}
+                    disabled={loadingAction === `acceptProposal:${proposal.contractId}`}
+                    onClick={() => acceptProposal(proposal.contractId)}
+                  >
+                    {loadingAction === `acceptProposal:${proposal.contractId}` ? (
+                      <><span className="spinner-border spinner-border-sm me-1" role="status" />Accepting...</>
+                    ) : "Accept \u2192"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Contracts ──────────────────────────────────────── */}
       <div className="gw-section-title">My Contracts ({visibleContracts.length})</div>
 
-      {visibleContracts.length === 0 ? (
+      {visibleContracts.length === 0 && visibleProposals.length === 0 ? (
         <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed", borderColor: partyInfo.color }}>
           <div style={{ fontSize: "0.9rem", opacity: 0.3, marginBottom: "8px", fontWeight: 600 }}>No data</div>
-          <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Contracts Visible</h6>
+          <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Proposals or Contracts</h6>
           <p style={{ fontSize: "0.82rem", color: "#5e6d55", margin: "0 0 8px" }}>
-            Zero contracts on this node &mdash; data was never sent, not hidden.
+            You&apos;ll see incoming proposals here when a client sends you one.
           </p>
           <p style={{ fontSize: "0.78rem", color: "#5e6d55", margin: 0 }}>
-            Switch to <strong>Eth Foundation</strong> from the account menu to create a contract.
+            Switch to a <strong>Client</strong> account to send a proposal to this freelancer.
           </p>
+        </div>
+      ) : visibleContracts.length === 0 ? (
+        <div className="gw-card-static" style={{ padding: "24px", textAlign: "center", color: "#5e6d55", fontSize: "0.85rem" }}>
+          No active contracts yet. Accept a proposal above to create one.
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useStore } from "./store";
 
 const DEMO_STEPS = [
@@ -8,16 +8,16 @@ const DEMO_STEPS = [
     action: "Click Next to begin.",
   },
   {
-    title: "Step 1: Create a Contract",
-    text: "You're viewing as the Ethereum Foundation (Client). Use the \"+ New Contract\" form to hire Nidhi. Fill in a project description, rate, budget, and milestones.",
-    action: "Create a contract, then click Next.",
+    title: "Step 1: Send a Proposal",
+    text: "You're viewing as the Ethereum Foundation (Client). Click \"+ New Contract\" to create a proposal for Nidhi. Fill in a project description, rate, budget, and milestones, then click \"Send Proposal\".",
+    action: "Send the proposal, then click Next.",
     highlight: "createContract",
   },
   {
-    title: "Step 2: Switch to Nidhi",
-    text: "Open the account menu in the top-right corner of the navbar and select \"Nidhi\". Notice she can ONLY see her own contract \u2014 the context bar updates to show you're viewing a different participant node.",
-    action: "Switch to Nidhi, then click Next.",
-    highlight: "partyAlice",
+    title: "Step 2: Accept the Proposal",
+    text: "Open the account menu in the top-right and switch to \"Nidhi\". You'll see an Incoming Proposals section with the proposal you just sent. Click \"Accept\" to create the contract.",
+    action: "Switch to Nidhi, accept the proposal, then click Next.",
+    highlight: "accountSwitcher",
   },
   {
     title: "Step 3: Submit a Milestone",
@@ -27,19 +27,19 @@ const DEMO_STEPS = [
   },
   {
     title: "Step 4: Check Akash's View",
-    text: "Open the account menu and switch to \"Akash\". He sees ZERO contracts. Nidhi's data was never sent to Akash's participant node \u2014 it's not filtered, it's physically absent.",
+    text: "Switch to \"Akash\". He sees ZERO proposals AND zero contracts. Nidhi's data was never sent to Akash's participant node \u2014 it's not filtered, it's physically absent.",
     action: "Switch to Akash, then click Next.",
-    highlight: "partyBob",
+    highlight: "party-freelancerB",
   },
   {
     title: "Step 5: Check the Auditor",
-    text: "Open the account menu and switch to \"Eve\". She sees zero individual contracts and zero payments. The auditor's node has never received this data.",
+    text: "Switch to \"Eve\". She sees zero contracts, zero payments, and zero proposals. The auditor's node has never received any of this data.",
     action: "Switch to Eve, then click Next.",
-    highlight: "partyAuditor",
+    highlight: "party-auditor",
   },
   {
-    title: "Step 6: Generate Audit Summary",
-    text: "Switch back to the Client via the account menu. Click \"Approve & Pay\" to pay for the milestone, then click \"Generate Audit Summary\". This creates an aggregate-only report visible to the auditor.",
+    title: "Step 6: Approve, Pay & Audit",
+    text: "Switch back to the Client. Click \"Approve & Pay\" (you can edit the payment amount). Then set the audit period and click \"Generate Audit\" to create an aggregate-only report for the auditor.",
     action: "Approve the milestone, generate the audit, then click Next.",
     highlight: "generateAudit",
   },
@@ -52,6 +52,27 @@ const DEMO_STEPS = [
 
 const DemoGuide: React.FC = () => {
   const { demoStep, setDemoStep } = useStore();
+
+  // Apply highlight effect to the current step's target element
+  useEffect(() => {
+    if (demoStep === null) return;
+    const step = DEMO_STEPS[demoStep];
+    if (!step || !("highlight" in step) || !step.highlight) return;
+
+    const el = document.querySelector(`[data-gw-id="${step.highlight}"]`);
+    if (el) {
+      el.classList.add("gw-demo-highlight");
+      // Scroll element into view if not visible
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    return () => {
+      // Clean up: remove highlight from all elements
+      document.querySelectorAll(".gw-demo-highlight").forEach((node) => {
+        node.classList.remove("gw-demo-highlight");
+      });
+    };
+  }, [demoStep]);
 
   if (demoStep === null) return null;
 
@@ -69,7 +90,7 @@ const DemoGuide: React.FC = () => {
           0%, 100% { box-shadow: 0 0 0 0 rgba(20, 168, 0, 0.4); }
           50% { box-shadow: 0 0 0 8px rgba(20, 168, 0, 0); }
         }
-        .gw-demo-highlight { animation: gw-demo-pulse 1.5s ease-in-out infinite; }
+        .gw-demo-highlight { animation: gw-demo-pulse 1.5s ease-in-out infinite; border-radius: 8px; }
       `}</style>
       <div
         style={{
