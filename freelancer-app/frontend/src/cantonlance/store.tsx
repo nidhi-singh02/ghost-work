@@ -5,7 +5,7 @@ import {
   AuditSummary,
   PartyRole,
 } from "./types";
-import { CantonDevNetClient, DevNetConfig, loadLedgerConfig, ApiCall } from "./cantonApi";
+import { CantonDevNetClient, DevNetConfig, loadAllConfigs, ApiCall, AvailableEnvironments, EnvironmentKey } from "./cantonApi";
 
 interface StoreContextType {
   activeParty: PartyRole;
@@ -29,6 +29,10 @@ interface StoreContextType {
   isConnected: boolean;
   devNetConfig: DevNetConfig | null;
   refreshContracts: () => void;
+  // Environment switching
+  environments: AvailableEnvironments;
+  activeEnvironment: EnvironmentKey;
+  switchEnvironment: (env: EnvironmentKey) => void;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -36,8 +40,9 @@ const StoreContext = createContext<StoreContextType | null>(null);
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // ── DevNet backend ────────────────────────────────────────────────
-  const [devNetConfig, setDevNetConfig] = useState<DevNetConfig | null>(null);
+  // ── Environment management ───────────────────────────────────────
+  const [environments, setEnvironments] = useState<AvailableEnvironments>({});
+  const [activeEnvironment, setActiveEnvironment] = useState<EnvironmentKey>("local");
   const devNetClientRef = useRef<CantonDevNetClient | null>(null);
 
   // ── State ─────────────────────────────────────────────────────────
@@ -51,6 +56,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [auditSummaries, setAuditSummaries] = useState<AuditSummary[]>([]);
 
+  // Derive the active config from environments + activeEnvironment
+  const devNetConfig = environments[activeEnvironment] ?? null;
+
   const log = useCallback((msg: string) => {
     setActionLog((prev) => [
       `[${new Date().toLocaleTimeString()}] ${msg}`,
@@ -58,22 +66,55 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
     ]);
   }, []);
 
-  // ── Load ledger config on mount ──────────────────────────────────
+  // ── Load ALL configs on mount ──────────────────────────────────
   useEffect(() => {
-    loadLedgerConfig().then((config) => {
+    loadAllConfigs().then((envs) => {
+      setEnvironments(envs);
+
+      // Pick initial environment: prefer local if available, else devnet
+      const initialEnv: EnvironmentKey = envs.local ? "local" : envs.devnet ? "devnet" : "local";
+      setActiveEnvironment(initialEnv);
+
+      const config = envs[initialEnv];
       if (config) {
-        setDevNetConfig(config);
         devNetClientRef.current = new CantonDevNetClient(config);
         setIsConnected(true);
         const modeLabel = config.mode === "local" ? "Local Sandbox" : "Canton DevNet";
         log(`Connected to ${modeLabel} at ${config.ledgerApiUrl}`);
+
+        const otherEnv: EnvironmentKey = initialEnv === "local" ? "devnet" : "local";
+        if (envs[otherEnv]) {
+          log(`${otherEnv === "local" ? "Local Sandbox" : "DevNet"} also available — use the environment switcher`);
+        }
       } else {
         log("No ledger config found — run setup-local.sh or deploy-devnet.sh");
       }
     });
   }, [log]);
 
-  // ── Refresh contracts from DevNet ─────────────────────────────────
+  // ── Switch environment ────────────────────────────────────────────
+  const switchEnvironment = useCallback((env: EnvironmentKey) => {
+    const config = environments[env];
+    if (!config) {
+      log(`Cannot switch to ${env} — no config available`);
+      return;
+    }
+
+    // Clear current contract state
+    setContracts([]);
+    setPayments([]);
+    setAuditSummaries([]);
+
+    // Create new client for the target environment
+    devNetClientRef.current = new CantonDevNetClient(config);
+    setActiveEnvironment(env);
+    setIsConnected(true);
+
+    const modeLabel = config.mode === "local" ? "Local Sandbox" : "Canton DevNet";
+    log(`Switched to ${modeLabel} at ${config.ledgerApiUrl}`);
+  }, [environments, log]);
+
+  // ── Refresh contracts ──────────────────────────────────────────────
   const refreshContracts = useCallback(async () => {
     if (!devNetClientRef.current) return;
 
@@ -84,18 +125,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
       setPayments(result.payments);
       setAuditSummaries(result.auditSummaries);
     } catch (err) {
-      log(`DevNet query error: ${String(err)}`);
+      log(`Query error: ${String(err)}`);
     } finally {
       setIsLoading(false);
     }
   }, [activeParty, log]);
 
-  // Auto-refresh when party changes
+  // Auto-refresh when party or environment changes
   useEffect(() => {
     if (isConnected) {
       refreshContracts();
     }
-  }, [isConnected, activeParty, refreshContracts]);
+  }, [isConnected, activeParty, activeEnvironment, refreshContracts]);
 
   // ── Create proposal ───────────────────────────────────────────────
   const createProposal = useCallback(
@@ -107,7 +148,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
       milestonesTotal: number
     ) => {
       if (!devNetClientRef.current) {
-        log("Not connected to DevNet");
+        log("Not connected");
         return;
       }
       setIsLoading(true);
@@ -117,7 +158,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
           log(apiCall.description);
           refreshContracts();
         })
-        .catch((err) => log(`DevNet error: ${String(err)}`))
+        .catch((err) => log(`Error: ${String(err)}`))
         .finally(() => setIsLoading(false));
     },
     [log, refreshContracts]
@@ -127,7 +168,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const submitMilestone = useCallback(
     (contractId: string) => {
       if (!devNetClientRef.current) {
-        log("Not connected to DevNet");
+        log("Not connected");
         return;
       }
       const role = activeParty === "freelancerA" || activeParty === "freelancerB"
@@ -141,7 +182,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
           log(apiCall.description);
           refreshContracts();
         })
-        .catch((err) => log(`DevNet error: ${String(err)}`))
+        .catch((err) => log(`Error: ${String(err)}`))
         .finally(() => setIsLoading(false));
     },
     [activeParty, log, refreshContracts]
@@ -151,7 +192,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const approveMilestone = useCallback(
     (contractId: string, payment: number) => {
       if (!devNetClientRef.current) {
-        log("Not connected to DevNet");
+        log("Not connected");
         return;
       }
       setIsLoading(true);
@@ -161,7 +202,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
           log(apiCall.description);
           refreshContracts();
         })
-        .catch((err) => log(`DevNet error: ${String(err)}`))
+        .catch((err) => log(`Error: ${String(err)}`))
         .finally(() => setIsLoading(false));
     },
     [log, refreshContracts]
@@ -170,7 +211,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   // ── Generate audit summary ────────────────────────────────────────
   const generateAuditSummary = useCallback(() => {
     if (!devNetClientRef.current) {
-      log("Not connected to DevNet");
+      log("Not connected");
       return;
     }
     setIsLoading(true);
@@ -182,7 +223,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         log(apiCall.description);
         refreshContracts();
       })
-      .catch((err) => log(`DevNet error: ${String(err)}`))
+      .catch((err) => log(`Error: ${String(err)}`))
       .finally(() => setIsLoading(false));
   }, [contracts, payments, log, refreshContracts]);
 
@@ -204,6 +245,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         isConnected,
         devNetConfig,
         refreshContracts,
+        environments,
+        activeEnvironment,
+        switchEnvironment,
       }}
     >
       {children}

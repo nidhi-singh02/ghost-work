@@ -13,7 +13,9 @@ services:
       - "5173:5173"   # Frontend (shared network)
     command: >
       bash -c "
+        apt-get update -qq && apt-get install -y -qq socat >/dev/null 2>&1;
         daml build --no-legacy-assistant-warning &&
+        (sleep 30 && CTRIP=$$(hostname -I | tr -d ' ') && socat TCP-LISTEN:6870,fork,reuseaddr,bind=$$CTRIP TCP:127.0.0.1:6870 &) &&
         daml sandbox --no-legacy-assistant-warning
           --dar .daml/dist/cantonlance-freelance-0.0.1.dar
           --port 6865

@@ -414,7 +414,7 @@ step7_write_config() {
 
   # The frontend will access the Ledger API via the Vite dev proxy
   # or via the SSH tunnel directly. We use /api prefix for the proxy.
-  local frontend_api_url="/api"
+  local frontend_api_url="/api/devnet"
 
   cat > "$CONFIG_FILE" <<EOCONFIG
 {

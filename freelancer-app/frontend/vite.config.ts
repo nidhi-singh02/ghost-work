@@ -1,11 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Local sandbox: localhost:6870 (shared network via network_mode: service:sandbox)
-// DevNet tunnel: localhost:8090 → DevNet nginx → participant:7575
-const LEDGER_API_PORT = process.env.LEDGER_API_PORT || '6870'
-const LEDGER_API_HOST = process.env.LEDGER_API_HOST || 'localhost'
-
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -13,10 +8,22 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
-      '/api': {
-        target: `http://${LEDGER_API_HOST}:${LEDGER_API_PORT}`,
+      // Local sandbox: Canton sandbox running in Docker on port 6870
+      // Use 127.0.0.1 (not localhost) to avoid IPv6 resolution issues with Docker
+      '/api/local': {
+        target: 'http://127.0.0.1:6870',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api\/local/, ''),
+      },
+      // DevNet: SSH tunnel to DevNet nginx on port 8090
+      // Requires Host header for nginx routing to the participant node
+      '/api/devnet': {
+        target: 'http://127.0.0.1:8090',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/devnet/, ''),
+        headers: {
+          'Host': 'json-ledger-api.localhost',
+        },
       },
     },
   },

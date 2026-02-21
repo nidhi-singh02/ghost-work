@@ -141,7 +141,7 @@ mkdir -p "$(dirname "$CONFIG_PATH")"
 cat > "$CONFIG_PATH" << EOF
 {
   "mode": "local",
-  "ledgerApiUrl": "/api",
+  "ledgerApiUrl": "/api/local",
   "packageId": "$PACKAGE_ID",
   "parties": {
     "client": {

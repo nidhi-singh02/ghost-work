@@ -47,6 +47,15 @@ export interface DevNetConfig {
   packageId?: string;  // Resolved at runtime from DAR
 }
 
+// ── Environment switching types ──────────────────────────────────────
+
+export type EnvironmentKey = "local" | "devnet";
+
+export interface AvailableEnvironments {
+  local?: DevNetConfig;
+  devnet?: DevNetConfig;
+}
+
 // ── Template qualified names ──────────────────────────────────────────
 
 const TEMPLATE_MODULE = "Freelance";
@@ -632,38 +641,45 @@ export class CantonDevNetClient {
 }
 
 /**
- * Try to load ledger config (local sandbox or DevNet).
- * Priority: local-config.json (sandbox) > devnet-config.json (DevNet)
+ * Load ALL available ledger configs (local sandbox and DevNet).
+ * Each config file is fetched independently. Missing configs are omitted.
  */
-export async function loadLedgerConfig(): Promise<DevNetConfig | null> {
-  // Try local sandbox config first
+export async function loadAllConfigs(): Promise<AvailableEnvironments> {
+  const result: AvailableEnvironments = {};
+
+  // Try local sandbox config
   try {
     const response = await fetch("/local-config.json");
-    if (response.ok) {
+    const ct = response.headers.get("content-type") ?? "";
+    if (response.ok && ct.includes("json")) {
       const config = await response.json() as DevNetConfig;
-      if (config && (config.mode === "local" || config.mode === "devnet")) {
-        return config;
+      if (config && config.mode === "local" && config.parties) {
+        result.local = config;
       }
     }
   } catch {
     // Not available
   }
 
-  // Fall back to DevNet config
+  // Try DevNet config
   try {
     const response = await fetch("/devnet-config.json");
-    if (response.ok) {
+    const ct = response.headers.get("content-type") ?? "";
+    if (response.ok && ct.includes("json")) {
       const config = await response.json() as DevNetConfig;
-      if (config && config.mode === "devnet") {
-        return config;
+      if (config && config.mode === "devnet" && config.parties) {
+        result.devnet = config;
       }
     }
   } catch {
     // Not available
   }
 
-  return null;
+  return result;
 }
 
-/** @deprecated Use loadLedgerConfig instead */
-export const loadDevNetConfig = loadLedgerConfig;
+/** @deprecated Use loadAllConfigs instead */
+export async function loadLedgerConfig(): Promise<DevNetConfig | null> {
+  const all = await loadAllConfigs();
+  return all.local ?? all.devnet ?? null;
+}
