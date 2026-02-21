@@ -246,6 +246,16 @@ freelancer-dapp/
 - **Dev Environment**: Docker (JDK 21, Node 20, Daml SDK — supports AMD64 + ARM64)
 - **Deployment**: Local sandbox + Canton DevNet (dual-environment support)
 
+#### What Makes This Different from Freelance Platforms
+
+| Feature | Public L1 (Ethereum) | GhostWork (Canton) |
+|---------|---------------------|-------------------|
+| Contract visibility | Everyone sees everything | Only parties on the contract |
+| Payment amounts | Public | Only client + freelancer |
+| Freelancer rates | Public | Invisible to other freelancers |
+| Audit access | Full individual records | Aggregate totals only |
+| Privacy mechanism | None (or encryption bolt-on) | Protocol-level sub-transaction |
+
 ## License
 
 Copyright (c) 2026. ETHDenver 2026 Hackathon Submission.
