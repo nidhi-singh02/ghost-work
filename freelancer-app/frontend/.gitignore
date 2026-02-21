@@ -26,3 +26,6 @@ dist-ssr
 /src/openapi.d.ts
 
 daml/freelance/daml/log/*
+
+# Runtime-generated ledger configs (contain party IDs, may contain tokens)
+public/*-config.json

@@ -7,7 +7,6 @@ import ApiProofPanel from "./ApiProofPanel";
 import PrivacyComparisonPanel from "./PrivacyComparisonPanel";
 import ToastNotifications from "./ToastNotifications";
 import DemoGuide from "./DemoGuide";
-import { EnvironmentKey } from "./cantonApi";
 import { PARTIES, PartyRole } from "./types";
 
 /* ── Global Styles ──────────────────────────────────────────────── */

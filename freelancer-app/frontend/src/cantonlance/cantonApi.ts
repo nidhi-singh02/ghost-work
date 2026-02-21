@@ -214,10 +214,13 @@ export class CantonDevNetClient {
     commands: Record<string, unknown>[],
     opts: { workflowId: string; commandId: string; submissionId: string }
   ): Promise<Record<string, unknown>> {
+    const body = {
+      commands: this.buildCommands(party, commands, opts),
+    };
     return (await this.apiRequestRaw(
       "POST",
       "/v2/commands/submit-and-wait",
-      this.buildCommands(party, commands, opts),
+      body,
       party
     )) as Record<string, unknown>;
   }

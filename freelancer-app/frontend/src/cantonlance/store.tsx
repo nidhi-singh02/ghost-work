@@ -70,6 +70,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [auditSummaries, setAuditSummaries] = useState<AuditSummary[]>([]);
 
+  // ── API call log (tracked in state so consumers re-render) ──────
+  const [apiCalls, setApiCalls] = useState<ApiCall[]>([]);
+
   // ── Toast notifications ──────────────────────────────────────────
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastIdRef = useRef(0);
@@ -86,6 +89,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // ── Demo guide ───────────────────────────────────────────────────
   const [demoStep, setDemoStep] = useState<number | null>(null);
+
+  // Sync apiCalls from the client ref into React state
+  const syncApiCalls = useCallback(() => {
+    if (devNetClientRef.current) {
+      setApiCalls(devNetClientRef.current.getApiCalls());
+    }
+  }, []);
 
   // Derive the active config from environments + activeEnvironment
   const devNetConfig = environments[activeEnvironment] ?? null;
@@ -155,12 +165,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
       setContracts(result.contracts);
       setPayments(result.payments);
       setAuditSummaries(result.auditSummaries);
+      syncApiCalls();
     } catch (err) {
       log(`Query error: ${String(err)}`);
+      syncApiCalls();
     } finally {
       setIsLoading(false);
     }
-  }, [activeParty, log]);
+  }, [activeParty, log, syncApiCalls]);
 
   // Auto-refresh when party or environment changes
   useEffect(() => {
@@ -190,15 +202,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         .then(({ apiCall }) => {
           log(apiCall.description);
           addToast(`Contract created with ${freelancerName}`, "success");
+          syncApiCalls();
           refreshContracts();
         })
         .catch((err) => {
           log(`Error: ${String(err)}`);
           addToast(`Error creating contract: ${String(err)}`, "danger");
+          syncApiCalls();
         })
         .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [log, refreshContracts, addToast]
+    [log, refreshContracts, addToast, syncApiCalls]
   );
 
   // ── Submit milestone ──────────────────────────────────────────────
@@ -219,15 +233,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         .then(({ apiCall }) => {
           log(apiCall.description);
           addToast("Milestone submitted successfully", "info");
+          syncApiCalls();
           refreshContracts();
         })
         .catch((err) => {
           log(`Error: ${String(err)}`);
           addToast(`Error submitting milestone: ${String(err)}`, "danger");
+          syncApiCalls();
         })
         .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [activeParty, log, refreshContracts, addToast]
+    [activeParty, log, refreshContracts, addToast, syncApiCalls]
   );
 
   // ── Approve milestone ─────────────────────────────────────────────
@@ -244,15 +260,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         .then(({ apiCall }) => {
           log(apiCall.description);
           addToast(`Milestone approved — $${payment.toLocaleString()} paid`, "success");
+          syncApiCalls();
           refreshContracts();
         })
         .catch((err) => {
           log(`Error: ${String(err)}`);
           addToast(`Error approving milestone: ${String(err)}`, "danger");
+          syncApiCalls();
         })
         .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [log, refreshContracts, addToast]
+    [log, refreshContracts, addToast, syncApiCalls]
   );
 
   // ── Generate audit summary ────────────────────────────────────────
@@ -270,14 +288,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
       .then(({ apiCall }) => {
         log(apiCall.description);
         addToast("Audit summary generated for auditor", "success");
+        syncApiCalls();
         refreshContracts();
       })
       .catch((err) => {
         log(`Error: ${String(err)}`);
         addToast(`Error generating audit: ${String(err)}`, "danger");
+        syncApiCalls();
       })
       .finally(() => { setIsLoading(false); setLoadingAction(null); });
-  }, [contracts, payments, log, refreshContracts, addToast]);
+  }, [contracts, payments, log, refreshContracts, addToast, syncApiCalls]);
 
   return (
     <StoreContext.Provider
@@ -291,7 +311,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         submitMilestone,
         approveMilestone,
         generateAuditSummary,
-        apiCalls: devNetClientRef.current?.getApiCalls() ?? [],
+        apiCalls,
         actionLog,
         isLoading,
         isConnected,

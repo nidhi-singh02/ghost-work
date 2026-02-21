@@ -36,7 +36,9 @@ template ProjectContract
       do
         assertMsg "Contract must be Active" (status == "Active")
         assertMsg "No milestones pending approval" (milestonesCompleted > 0)
+        assertMsg "Payment must be positive" (milestonePayment > 0.0)
         let newAmountPaid = amountPaid + milestonePayment
+        assertMsg "Total paid exceeds budget" (newAmountPaid <= totalBudget)
         let newStatus = if milestonesCompleted >= milestonesTotal
                         then "Completed"
                         else "Active"
