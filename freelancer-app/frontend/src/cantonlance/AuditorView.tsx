@@ -60,14 +60,18 @@ const AuditorView: React.FC = () => {
 
       <h5>Audit Summaries</h5>
       {visibleAuditSummaries.length === 0 ? (
-        <div className="card">
-          <div className="card-body text-center text-muted">
-            <p className="mb-0">
-              No audit summaries available yet.
+        <div className="card" style={{ borderStyle: "dashed", borderColor: PARTIES.auditor.color }}>
+          <div className="card-body text-center py-4">
+            <div style={{ fontSize: "2.5rem", opacity: 0.2 }}>&#x1F6E1;</div>
+            <h5 className="mt-2">No Audit Summaries Yet</h5>
+            <p className="text-muted mb-2">
+              The auditor&apos;s node has received <strong>zero</strong> individual
+              contracts or payments &mdash; Canton&apos;s privacy enforces this at
+              the protocol level.
             </p>
-            <small>
-              Switch to the Client view and click &quot;Generate Audit Summary&quot; to
-              create one.
+            <small className="text-muted">
+              Switch to <strong>Client</strong> and click &quot;Generate Audit Summary&quot;
+              to create an aggregate-only report visible to the auditor.
             </small>
           </div>
         </div>

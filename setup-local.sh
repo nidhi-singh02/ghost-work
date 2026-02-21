@@ -92,9 +92,9 @@ for p in data.get('partyDetails', []):
   echo "$party_id"
 }
 
-CLIENT_PARTY=$(allocate_party "Client_Acme")
-FREELANCER_A_PARTY=$(allocate_party "FreelancerA_Alice")
-FREELANCER_B_PARTY=$(allocate_party "FreelancerB_Bob")
+CLIENT_PARTY=$(allocate_party "Client_EthFoundation")
+FREELANCER_A_PARTY=$(allocate_party "FreelancerA_Nidhi")
+FREELANCER_B_PARTY=$(allocate_party "FreelancerB_Akash")
 AUDITOR_PARTY=$(allocate_party "Auditor_Eve")
 
 # ── Step 4: Create users with actAs rights ───────────────────────────

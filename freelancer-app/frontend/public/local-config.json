@@ -1,29 +1,29 @@
 {
   "mode": "local",
   "ledgerApiUrl": "/api/local",
-  "packageId": "a8b657e75f4de7587a6b645f268fffe5cf16c46e7e68706dce41bf1345f4fefe",
+  "packageId": "9eefe6471db344898fe1e187ac0330e733b0c44762efd3f118de02b7ce354831",
   "parties": {
     "client": {
-      "partyId": "Client_Acme::12201e9c9fda2bd049e0f83a0de1ddbb7ac7c166b2f64f86f90cf7cea8777c07b7cb",
+      "partyId": "Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
       "userId": "client_user",
       "token": ""
     },
     "freelancerA": {
-      "partyId": "FreelancerA_Alice::12201e9c9fda2bd049e0f83a0de1ddbb7ac7c166b2f64f86f90cf7cea8777c07b7cb",
+      "partyId": "FreelancerA_Nidhi::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
       "userId": "freelancerA_user",
       "token": ""
     },
     "freelancerB": {
-      "partyId": "FreelancerB_Bob::12201e9c9fda2bd049e0f83a0de1ddbb7ac7c166b2f64f86f90cf7cea8777c07b7cb",
+      "partyId": "FreelancerB_Akash::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
       "userId": "freelancerB_user",
       "token": ""
     },
     "auditor": {
-      "partyId": "Auditor_Eve::12201e9c9fda2bd049e0f83a0de1ddbb7ac7c166b2f64f86f90cf7cea8777c07b7cb",
+      "partyId": "Auditor_Eve::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
       "userId": "auditor_user",
       "token": ""
     }
   },
   "darPackageId": "cantonlance-freelance",
-  "deployedAt": "2026-02-21T03:34:02Z"
+  "deployedAt": "2026-02-21T04:10:33Z"
 }

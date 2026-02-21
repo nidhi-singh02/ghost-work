@@ -7,6 +7,12 @@ import {
 } from "./types";
 import { CantonDevNetClient, DevNetConfig, loadAllConfigs, ApiCall, AvailableEnvironments, EnvironmentKey } from "./cantonApi";
 
+export interface Toast {
+  id: number;
+  message: string;
+  type: "success" | "info" | "warning" | "danger";
+}
+
 interface StoreContextType {
   activeParty: PartyRole;
   setActiveParty: (party: PartyRole) => void;
@@ -33,6 +39,14 @@ interface StoreContextType {
   environments: AvailableEnvironments;
   activeEnvironment: EnvironmentKey;
   switchEnvironment: (env: EnvironmentKey) => void;
+  // Toast notifications
+  toasts: Toast[];
+  addToast: (message: string, type: Toast["type"]) => void;
+  // Loading action tracking
+  loadingAction: string | null;
+  // Demo guide
+  demoStep: number | null;
+  setDemoStep: (step: number | null) => void;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -55,6 +69,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
   const [contracts, setContracts] = useState<ProjectContract[]>([]);
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [auditSummaries, setAuditSummaries] = useState<AuditSummary[]>([]);
+
+  // ── Toast notifications ──────────────────────────────────────────
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const toastIdRef = useRef(0);
+  const addToast = useCallback((message: string, type: Toast["type"]) => {
+    const id = ++toastIdRef.current;
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  }, []);
+
+  // ── Loading action tracking ──────────────────────────────────────
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
+  // ── Demo guide ───────────────────────────────────────────────────
+  const [demoStep, setDemoStep] = useState<number | null>(null);
 
   // Derive the active config from environments + activeEnvironment
   const devNetConfig = environments[activeEnvironment] ?? null;
@@ -152,16 +183,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
       setIsLoading(true);
+      setLoadingAction("createProposal");
+      const freelancerName = freelancerRole === "freelancerA" ? "Nidhi" : "Akash";
       devNetClientRef.current
         .createContract(freelancerRole, description, hourlyRate, totalBudget, milestonesTotal)
         .then(({ apiCall }) => {
           log(apiCall.description);
+          addToast(`Contract created with ${freelancerName}`, "success");
           refreshContracts();
         })
-        .catch((err) => log(`Error: ${String(err)}`))
-        .finally(() => setIsLoading(false));
+        .catch((err) => {
+          log(`Error: ${String(err)}`);
+          addToast(`Error creating contract: ${String(err)}`, "danger");
+        })
+        .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [log, refreshContracts]
+    [log, refreshContracts, addToast]
   );
 
   // ── Submit milestone ──────────────────────────────────────────────
@@ -176,16 +213,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         : "freelancerA";
 
       setIsLoading(true);
+      setLoadingAction(`submitMilestone:${contractId}`);
       devNetClientRef.current
         .submitMilestone(contractId, role)
         .then(({ apiCall }) => {
           log(apiCall.description);
+          addToast("Milestone submitted successfully", "info");
           refreshContracts();
         })
-        .catch((err) => log(`Error: ${String(err)}`))
-        .finally(() => setIsLoading(false));
+        .catch((err) => {
+          log(`Error: ${String(err)}`);
+          addToast(`Error submitting milestone: ${String(err)}`, "danger");
+        })
+        .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [activeParty, log, refreshContracts]
+    [activeParty, log, refreshContracts, addToast]
   );
 
   // ── Approve milestone ─────────────────────────────────────────────
@@ -196,16 +238,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
       setIsLoading(true);
+      setLoadingAction(`approveMilestone:${contractId}`);
       devNetClientRef.current
         .approveMilestone(contractId, payment)
         .then(({ apiCall }) => {
           log(apiCall.description);
+          addToast(`Milestone approved — $${payment.toLocaleString()} paid`, "success");
           refreshContracts();
         })
-        .catch((err) => log(`Error: ${String(err)}`))
-        .finally(() => setIsLoading(false));
+        .catch((err) => {
+          log(`Error: ${String(err)}`);
+          addToast(`Error approving milestone: ${String(err)}`, "danger");
+        })
+        .finally(() => { setIsLoading(false); setLoadingAction(null); });
     },
-    [log, refreshContracts]
+    [log, refreshContracts, addToast]
   );
 
   // ── Generate audit summary ────────────────────────────────────────
@@ -215,17 +262,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
     setIsLoading(true);
+    setLoadingAction("generateAudit");
     const totalContracts = contracts.length;
     const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
     devNetClientRef.current
       .generateAuditSummary(totalContracts, totalPaid)
       .then(({ apiCall }) => {
         log(apiCall.description);
+        addToast("Audit summary generated for auditor", "success");
         refreshContracts();
       })
-      .catch((err) => log(`Error: ${String(err)}`))
-      .finally(() => setIsLoading(false));
-  }, [contracts, payments, log, refreshContracts]);
+      .catch((err) => {
+        log(`Error: ${String(err)}`);
+        addToast(`Error generating audit: ${String(err)}`, "danger");
+      })
+      .finally(() => { setIsLoading(false); setLoadingAction(null); });
+  }, [contracts, payments, log, refreshContracts, addToast]);
 
   return (
     <StoreContext.Provider
@@ -248,6 +300,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
         environments,
         activeEnvironment,
         switchEnvironment,
+        toasts,
+        addToast,
+        loadingAction,
+        demoStep,
+        setDemoStep,
       }}
     >
       {children}

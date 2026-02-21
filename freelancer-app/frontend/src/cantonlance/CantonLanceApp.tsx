@@ -6,7 +6,10 @@ import FreelancerView from "./FreelancerView";
 import AuditorView from "./AuditorView";
 import ApiProofPanel from "./ApiProofPanel";
 import PrivacyComparisonPanel from "./PrivacyComparisonPanel";
+import ToastNotifications from "./ToastNotifications";
+import DemoGuide from "./DemoGuide";
 import { EnvironmentKey } from "./cantonApi";
+import { PARTIES } from "./types";
 
 const EnvironmentSelector: React.FC = () => {
   const { environments, activeEnvironment, switchEnvironment, isConnected } = useStore();
@@ -81,6 +84,88 @@ const EnvironmentSelector: React.FC = () => {
   );
 };
 
+const HeroSection: React.FC = () => {
+  const { visibleContracts, isConnected, demoStep, setDemoStep } = useStore();
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed || visibleContracts.length > 0 || !isConnected) return null;
+
+  const features = [
+    {
+      icon: "\u{1F6E1}",
+      title: "Sub-Transaction Privacy",
+      text: "Nidhi never sees Akash's contract. The data never reaches their node.",
+    },
+    {
+      icon: "\u{1F50D}",
+      title: "Aggregate-Only Auditing",
+      text: "Auditor verifies totals without seeing any individual rates, names, or milestones.",
+    },
+    {
+      icon: "\u{1F512}",
+      title: "Protocol-Level Enforcement",
+      text: "Not access control. Not filtering. Canton physically withholds unauthorized data.",
+    },
+  ];
+
+  return (
+    <div
+      style={{
+        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        color: "#fff",
+        padding: "2.5rem 2rem",
+        borderRadius: "0.5rem",
+        marginBottom: "1.5rem",
+        position: "relative",
+      }}
+    >
+      <button
+        className="btn btn-sm btn-outline-light"
+        style={{ position: "absolute", top: "0.75rem", right: "0.75rem", opacity: 0.6, fontSize: "0.7rem" }}
+        onClick={() => setDismissed(true)}
+      >
+        Dismiss
+      </button>
+      <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "0.4rem" }}>
+        GhostWork
+      </h1>
+      <p style={{ fontSize: "1.1rem", opacity: 0.9, maxWidth: "700px", marginBottom: "1.5rem" }}>
+        Private freelancer payments on Canton L1. Every party sees{" "}
+        <strong>only their own data</strong> &mdash; enforced at the protocol level,
+        not by access control.
+      </p>
+      <div className="row g-3" style={{ maxWidth: "800px" }}>
+        {features.map((f) => (
+          <div className="col-md-4" key={f.title}>
+            <div
+              style={{
+                backgroundColor: "rgba(255,255,255,0.08)",
+                borderRadius: "0.5rem",
+                padding: "1rem",
+                height: "100%",
+              }}
+            >
+              <div style={{ fontSize: "1.5rem", marginBottom: "0.3rem" }}>{f.icon}</div>
+              <div style={{ fontWeight: 600, fontSize: "0.85rem", marginBottom: "0.3rem" }}>
+                {f.title}
+              </div>
+              <div style={{ fontSize: "0.8rem", opacity: 0.8 }}>{f.text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {demoStep === null && (
+        <button
+          className="btn btn-primary btn-sm mt-3"
+          onClick={() => setDemoStep(0)}
+        >
+          Start Guided Demo
+        </button>
+      )}
+    </div>
+  );
+};
+
 const ConnectionBanner: React.FC = () => {
   const { isLoading, isConnected, devNetConfig, environments, activeEnvironment } = useStore();
 
@@ -131,12 +216,21 @@ const ConnectionBanner: React.FC = () => {
 const AppContent: React.FC = () => {
   const { activeParty, isLoading, isConnected } = useStore();
 
+  const partyColor = PARTIES[activeParty].color;
+
   return (
     <div>
-      <nav className="navbar navbar-dark bg-dark mb-4">
+      <ToastNotifications />
+      <nav
+        className="navbar navbar-dark mb-4"
+        style={{
+          backgroundColor: partyColor,
+          transition: "background-color 0.4s ease",
+        }}
+      >
         <div className="container">
           <span className="navbar-brand fw-bold">
-            CantonLance
+            GhostWork
           </span>
           <span className="navbar-text text-light d-flex align-items-center gap-2">
             Private Freelancer Payment Protocol
@@ -146,6 +240,7 @@ const AppContent: React.FC = () => {
       </nav>
 
       <div className="container">
+        <HeroSection />
         <ConnectionBanner />
         <PartySwitcher />
 
@@ -168,18 +263,19 @@ const AppContent: React.FC = () => {
         <PrivacyComparisonPanel />
         <ApiProofPanel />
 
-        <footer className="mt-5 mb-3 text-center text-muted">
+        <footer className="mt-5 mb-3 text-center text-muted" style={{ paddingBottom: "4rem" }}>
           <small>
             Built on Canton L1 &mdash; Sub-transaction privacy ensures each
             party only sees their own data. ETHDenver 2026.
           </small>
         </footer>
       </div>
+      <DemoGuide />
     </div>
   );
 };
 
-const CantonLanceApp: React.FC = () => {
+const GhostWorkApp: React.FC = () => {
   return (
     <StoreProvider>
       <AppContent />
@@ -187,4 +283,4 @@ const CantonLanceApp: React.FC = () => {
   );
 };
 
-export default CantonLanceApp;
+export default GhostWorkApp;

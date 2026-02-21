@@ -3,10 +3,12 @@ import { useStore } from "./store";
 import { PARTIES } from "./types";
 
 const ApiProofPanel: React.FC = () => {
-  const { apiCalls } = useStore();
+  const { apiCalls, activeEnvironment } = useStore();
   const [expanded, setExpanded] = useState<number | null>(null);
 
   if (apiCalls.length === 0) return null;
+
+  const envLabel = activeEnvironment === "local" ? "Local Sandbox" : "DevNet";
 
   return (
     <div className="mt-4">
@@ -16,7 +18,7 @@ const ApiProofPanel: React.FC = () => {
           <span className="badge bg-secondary">{apiCalls.length}</span>
         </h6>
         <small className="text-muted">
-          Real Canton JSON Ledger API v2 requests and responses from DevNet
+          Real Canton JSON Ledger API v2 requests and responses from {envLabel}
         </small>
       </div>
       <div className="border rounded" style={{ maxHeight: "400px", overflowY: "auto" }}>

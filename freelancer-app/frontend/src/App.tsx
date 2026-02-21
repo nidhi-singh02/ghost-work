@@ -1,8 +1,8 @@
 import React from 'react';
-import CantonLanceApp from './cantonlance/CantonLanceApp';
+import GhostWorkApp from './cantonlance/CantonLanceApp';
 
 const App: React.FC = () => {
-    return <CantonLanceApp />;
+    return <GhostWorkApp />;
 };
 
 export default App;

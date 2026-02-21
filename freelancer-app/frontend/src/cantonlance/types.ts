@@ -42,20 +42,20 @@ export interface Party {
 export const PARTIES: Record<PartyRole, Party> = {
   client: {
     id: "client",
-    name: "Client_Acme",
-    displayName: "Acme Corp (Client)",
+    name: "Client_EthFoundation",
+    displayName: "Ethereum Foundation (Client)",
     color: "#0d6efd",
   },
   freelancerA: {
     id: "freelancerA",
-    name: "FreelancerA_Alice",
-    displayName: "Alice (Freelancer)",
+    name: "FreelancerA_Nidhi",
+    displayName: "Nidhi (Freelancer)",
     color: "#198754",
   },
   freelancerB: {
     id: "freelancerB",
-    name: "FreelancerB_Bob",
-    displayName: "Bob (Freelancer)",
+    name: "FreelancerB_Akash",
+    displayName: "Akash (Freelancer)",
     color: "#6f42c1",
   },
   auditor: {

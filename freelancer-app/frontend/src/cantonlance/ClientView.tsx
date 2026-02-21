@@ -9,6 +9,7 @@ const ClientView: React.FC = () => {
     createProposal,
     approveMilestone,
     generateAuditSummary,
+    loadingAction,
   } = useStore();
 
   const [showForm, setShowForm] = useState(false);
@@ -53,9 +54,13 @@ const ClientView: React.FC = () => {
           <button
             className="btn btn-outline-danger btn-sm"
             onClick={generateAuditSummary}
-            disabled={visibleContracts.length === 0}
+            disabled={visibleContracts.length === 0 || loadingAction === "generateAudit"}
           >
-            Generate Audit Summary
+            {loadingAction === "generateAudit" ? (
+              <><span className="spinner-border spinner-border-sm me-1" role="status" />Generating...</>
+            ) : (
+              "Generate Audit Summary"
+            )}
           </button>
         </div>
       </div>
@@ -80,8 +85,8 @@ const ClientView: React.FC = () => {
                       })
                     }
                   >
-                    <option value="freelancerA">Alice (Freelancer A)</option>
-                    <option value="freelancerB">Bob (Freelancer B)</option>
+                    <option value="freelancerA">Nidhi (Freelancer A)</option>
+                    <option value="freelancerB">Akash (Freelancer B)</option>
                   </select>
                 </div>
                 <div className="col-md-6">
@@ -147,8 +152,16 @@ const ClientView: React.FC = () => {
                 </div>
               </div>
               <div className="mt-2">
-                <button type="submit" className="btn btn-success btn-sm me-2">
-                  Create Contract
+                <button
+                  type="submit"
+                  className="btn btn-success btn-sm me-2"
+                  disabled={loadingAction === "createProposal"}
+                >
+                  {loadingAction === "createProposal" ? (
+                    <><span className="spinner-border spinner-border-sm me-1" role="status" />Creating...</>
+                  ) : (
+                    "Create Contract"
+                  )}
                 </button>
                 <button
                   type="button"
@@ -168,9 +181,18 @@ const ClientView: React.FC = () => {
         <span className="badge bg-primary">{visibleContracts.length}</span>
       </h5>
       {visibleContracts.length === 0 ? (
-        <p className="text-muted">
-          No contracts yet. Create one to get started.
-        </p>
+        <div className="card" style={{ borderStyle: "dashed" }}>
+          <div className="card-body text-center py-4">
+            <div style={{ fontSize: "2.5rem", opacity: 0.2 }}>&#x1F4DD;</div>
+            <h5 className="mt-2">No Contracts Yet</h5>
+            <p className="text-muted mb-3">
+              Create your first freelancer contract to see Canton&apos;s privacy in action.
+            </p>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
+              + Create First Contract
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="table-responsive">
           <table className="table table-hover table-sm">
@@ -209,13 +231,18 @@ const ClientView: React.FC = () => {
                       c.milestonesCompleted > 0 && (
                         <button
                           className="btn btn-outline-success btn-sm"
+                          disabled={loadingAction === `approveMilestone:${c.contractId}`}
                           onClick={() => {
                             const payment =
                               c.totalBudget / c.milestonesTotal;
                             approveMilestone(c.contractId, payment);
                           }}
                         >
-                          Approve & Pay
+                          {loadingAction === `approveMilestone:${c.contractId}` ? (
+                            <><span className="spinner-border spinner-border-sm me-1" role="status" />Paying...</>
+                          ) : (
+                            "Approve & Pay"
+                          )}
                         </button>
                       )}
                   </td>

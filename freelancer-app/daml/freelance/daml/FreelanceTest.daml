@@ -12,9 +12,9 @@ import DA.List (head)
 privacyTest : Script ()
 privacyTest = script do
   -- Step 1: Allocate parties
-  client <- allocateParty "Client_Acme"
-  freelancerA <- allocateParty "FreelancerA_Alice"
-  freelancerB <- allocateParty "FreelancerB_Bob"
+  client <- allocateParty "Client_EthFoundation"
+  freelancerA <- allocateParty "FreelancerA_Nidhi"
+  freelancerB <- allocateParty "FreelancerB_Akash"
   auditor <- allocateParty "Auditor_Eve"
 
   -- Step 2: Client proposes contracts with each freelancer

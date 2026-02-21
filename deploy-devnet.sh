@@ -302,7 +302,7 @@ step5_allocate_parties() {
   local admin_jwt
   admin_jwt=$(generate_jwt "ledger-api-user")
 
-  local hints=("Client_Acme" "FreelancerA_Alice" "FreelancerB_Bob" "Auditor_Eve")
+  local hints=("Client_EthFoundation" "FreelancerA_Nidhi" "FreelancerB_Akash" "Auditor_Eve")
   local roles=("client" "freelancerA" "freelancerB" "auditor")
 
   for i in 0 1 2 3; do

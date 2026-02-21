@@ -3,7 +3,7 @@ import { useStore } from "./store";
 import { PARTIES } from "./types";
 
 const FreelancerView: React.FC = () => {
-  const { activeParty, visibleContracts, visiblePayments, submitMilestone } =
+  const { activeParty, visibleContracts, visiblePayments, submitMilestone, loadingAction } =
     useStore();
 
   const partyInfo = PARTIES[activeParty];
@@ -27,11 +27,17 @@ const FreelancerView: React.FC = () => {
         </span>
       </h5>
       {visibleContracts.length === 0 ? (
-        <div className="card">
-          <div className="card-body text-center text-muted">
-            <p className="mb-0">No contracts visible to this party.</p>
-            <small>
-              Switch to the Client view to create a contract with this freelancer.
+        <div className="card" style={{ borderStyle: "dashed", borderColor: partyInfo.color }}>
+          <div className="card-body text-center py-4">
+            <div style={{ fontSize: "2.5rem", opacity: 0.2 }}>&#x1F512;</div>
+            <h5 className="mt-2">No Contracts Visible</h5>
+            <p className="text-muted mb-2">
+              Canton&apos;s privacy means this participant node has received{" "}
+              <strong>zero</strong> contracts for {partyInfo.displayName}.
+            </p>
+            <small className="text-muted">
+              This is not access control &mdash; the data was never sent to this node.
+              Switch to <strong>Client</strong> to create a contract.
             </small>
           </div>
         </div>
@@ -77,10 +83,14 @@ const FreelancerView: React.FC = () => {
                   <button
                     className="btn btn-sm mt-2"
                     style={{ backgroundColor: partyInfo.color, color: "#fff" }}
+                    disabled={loadingAction === `submitMilestone:${c.contractId}`}
                     onClick={() => submitMilestone(c.contractId)}
                   >
-                    Submit Milestone{" "}
-                    {c.milestonesCompleted + 1}
+                    {loadingAction === `submitMilestone:${c.contractId}` ? (
+                      <><span className="spinner-border spinner-border-sm me-1" role="status" />Submitting...</>
+                    ) : (
+                      <>Submit Milestone {c.milestonesCompleted + 1}</>
+                    )}
                   </button>
                 )}
               {c.milestonesCompleted > 0 &&
