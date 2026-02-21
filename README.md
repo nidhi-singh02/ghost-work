@@ -1,61 +1,186 @@
-# CantonLance — Private Freelancer Payment Protocol
+# GhostWork — Private Freelancer Payment Protocol
 
-A dApp where clients hire freelancers through private contracts — each freelancer's rate, scope, and payments are invisible to other freelancers working for the same client. An auditor can verify payment correctness without seeing commercial terms.
+A privacy-first freelancer payment dApp on **Canton L1**. Clients hire freelancers through private contracts where each freelancer's rate, scope, and payments are invisible to other freelancers. An auditor can verify payment correctness without seeing any individual commercial terms.
 
-**Built on Canton L1** for the ETHDenver 2026 Canton Network Bounty.
+Built for the **ETHDenver 2026 Canton Network Bounty**.
 
 ## The Problem
 
-On Upwork, Fiverr, and every blockchain freelance platform (CryptoTask, LaborX, ChainPact), contract terms are either visible to everyone or controlled by a central intermediary. Freelancers can't protect their rates. Clients can't protect their spending. There is no existing blockchain solution that solves this with cryptographic privacy.
+On Upwork, Fiverr, and every blockchain freelance platform, contract terms are either visible to everyone or controlled by a central intermediary. Freelancers can't protect their rates. Clients can't protect their spending. No existing blockchain solution offers cryptographic privacy for this.
 
 ## What Canton Uniquely Enables
 
-Canton's **sub-transaction privacy** means that when a Client creates a contract with Freelancer A, Freelancer B's participant node **never receives any data** about it. This isn't access control — the data literally never reaches them. No other blockchain does this.
+Canton's **sub-transaction privacy** means when a Client creates a contract with Freelancer A, Freelancer B's participant node **never receives any data** about it. This isn't access control or client-side filtering — the data physically never reaches them. No other blockchain does this.
 
 ## Privacy Model
 
-| Party | Role | What They See |
-|-------|------|---------------|
-| **Client** | Hires freelancers, approves milestones, pays | All their own contracts, all payments they've made |
-| **Freelancer A** | Accepts work, submits deliverables, gets paid | ONLY their own contract with the client. Cannot see other freelancers' existence, rates, or payments |
-| **Freelancer B** | Same as Freelancer A | ONLY their own contract. Freelancer A is completely invisible |
-| **Auditor** | Verifies payment integrity | Summary totals only (total paid, number of contracts). Cannot see individual rates, project descriptions, or freelancer identities |
+| Party | Sees | Does NOT See |
+|-------|------|-------------|
+| **Ethereum Foundation** (Client) | All own contracts, all payments | Nothing hidden from client |
+| **Nidhi** (Freelancer A) | Only own contract + payments | Akash's contract, rate, payments |
+| **Akash** (Freelancer B) | Only own contract + payments | Nidhi's contract, rate, payments |
+| **Eve** (Auditor) | Aggregate totals only | Individual rates, descriptions, freelancer names |
 
 ## Architecture
 
 ```
-React UI (Party Switcher) → Canton JSON Ledger API → Daml Contracts → Canton L1
+React UI (Party Switcher) --> Canton JSON Ledger API v2 --> Daml Smart Contracts --> Canton L1
 ```
 
-**Smart Contracts (Daml):**
-- `ProjectContract` — Private agreement between Client and Freelancer (signatories: both)
-- `PaymentRecord` — Immutable payment record (signatories: client + freelancer)
-- `AuditSummary` — Aggregated totals for auditor (signatory: client, observer: auditor)
-- `ProjectProposal` — Propose-accept pattern for contract creation
+**4 Daml Templates:**
+- `ProjectProposal` — Propose-accept pattern (signatory: client, observer: freelancer)
+- `ProjectContract` — Private agreement (signatories: client + freelancer)
+- `PaymentRecord` — Immutable payment proof (signatories: client + freelancer)
+- `AuditSummary` — Aggregate-only report (signatory: client, observer: auditor)
+
+---
 
 ## Setup & Installation
 
 ### Prerequisites
-- Docker Desktop (8GB+ RAM allocated)
-- Git
 
-### Quick Start
+- **Docker Desktop** (8GB+ RAM allocated)
+- **Node.js 20+** (for running the frontend on host)
+- **Git**
+
+### Step 1: Build the Dev Image
 
 ```bash
-# Clone the repository
 git clone <repo-url>
 cd freelancer-dapp
 
-# Build the development Docker image (includes Daml SDK 3.4.10, JDK 21, Node.js 20)
+# Build Docker image with JDK 21, Node.js 20, Daml SDK 3.4.10
 docker build -f Dockerfile.dev -t cantonlance-dev .
-
-# Start the frontend
-docker compose up
-
-# Open http://localhost:5173 in your browser
 ```
 
-### Run Daml Tests (Proves Privacy Model)
+This takes ~5 minutes on first build. The image supports both AMD64 and ARM64 (Apple Silicon).
+
+---
+
+## Option A: Local Sandbox (Recommended for Demo)
+
+The sandbox runs a single-node Canton ledger inside Docker. The frontend runs on your host machine and connects through a Vite proxy.
+
+### Step 2a: Start the Sandbox
+
+```bash
+docker compose up -d sandbox
+```
+
+Wait for it to become healthy (~60 seconds). The sandbox:
+- Compiles the Daml contracts
+- Starts the Canton sandbox with JSON Ledger API on port 6870
+- Runs a `socat` bridge so the API is accessible from the host
+
+Check health:
+```bash
+docker inspect --format='{{.State.Health.Status}}' cantonlance-sandbox
+# Should return: healthy
+```
+
+### Step 3a: Run Setup Script
+
+```bash
+./setup-local.sh
+```
+
+This script (runs from host, executes commands inside the container):
+1. Waits for the sandbox to be ready
+2. Uploads the compiled DAR (Daml Archive)
+3. Allocates 4 parties: `Client_EthFoundation`, `FreelancerA_Nidhi`, `FreelancerB_Akash`, `Auditor_Eve`
+4. Creates users with `ActAs`/`ReadAs` rights
+5. Writes `freelancer-app/frontend/public/local-config.json` with party IDs
+
+### Step 4a: Start the Frontend
+
+```bash
+cd freelancer-app/frontend
+npm install
+npx vite
+```
+
+Open **http://localhost:5173** in your browser.
+
+The Vite dev server proxies `/api/local` to the sandbox at `127.0.0.1:6870`. The frontend auto-detects the local config and connects.
+
+### Verify It Works
+
+```bash
+# Check Canton API is reachable through the proxy
+curl -s http://localhost:5173/api/local/v2/version | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])"
+# Should print: 3.4.10
+```
+
+---
+
+## Option B: Canton DevNet
+
+Deploy to the Canton Network DevNet for a multi-node environment.
+
+### Prerequisites
+
+- SSH access to a DevNet server (provided by Canton Network for hackathon)
+- The DevNet validator stack must be running (`start.sh` completed)
+- `expect` installed on your machine (`brew install expect` on macOS)
+
+### Step 2b: Open SSH Tunnel
+
+```bash
+# Interactive mode
+./tunnel-devnet.sh
+
+# Or specify server directly (DevNet5 example)
+./tunnel-devnet.sh 136.112.241.18 5
+```
+
+This opens `localhost:8090` --> DevNet nginx:8080 --> participant:7575 (JSON Ledger API). Keep this terminal open.
+
+### Step 3b: Deploy
+
+In a separate terminal:
+
+```bash
+# Interactive mode
+./deploy-devnet.sh
+
+# Or specify server directly
+./deploy-devnet.sh 136.112.241.18 5
+```
+
+The deploy script:
+1. Checks the DAR file exists (builds if needed)
+2. Verifies validator health via SSH
+3. Opens its own SSH tunnel
+4. Uploads the DAR to the Canton Ledger API
+5. Allocates 4 parties with JWT auth (HS256 with `unsafe` secret)
+6. Creates users with `ActAs`/`ReadAs` rights
+7. Generates JWT tokens and writes `freelancer-app/frontend/public/devnet-config.json`
+8. Verifies deployment by querying active contracts
+
+### Step 4b: Start the Frontend
+
+```bash
+cd freelancer-app/frontend
+npm install
+npx vite
+```
+
+The Vite dev server proxies `/api/devnet` to `127.0.0.1:8090` with the required `Host: json-ledger-api.localhost` header. The frontend auto-detects both configs and lets you switch environments.
+
+### DevNet Architecture
+
+```
+Browser --> Vite (localhost:5173)
+              |
+              |--> /api/local  --> sandbox:6870 (Docker)
+              |--> /api/devnet --> SSH tunnel:8090 --> DevNet nginx:8080 --> participant:7575
+```
+
+---
+
+## Running Daml Tests
+
+The Daml script test proves the privacy model programmatically:
 
 ```bash
 docker run --rm \
@@ -70,92 +195,73 @@ Test Summary
 daml/FreelanceTest.daml:privacyTest: ok, 5 active contracts, 9 transactions.
 ```
 
-### Compile Daml Contracts
+---
 
-```bash
-docker run --rm \
-  -v $(pwd)/freelancer-app/daml/freelance:/workspace \
-  cantonlance-dev \
-  bash -c "cd /workspace && daml build --no-legacy-assistant-warning"
-```
+## How to Demo
 
-### Build Frontend for Production
+1. Open `http://localhost:5173`
+2. Click **"Start Guided Demo"** on the hero section for a step-by-step walkthrough
+3. Or manually:
+   - As **Ethereum Foundation**: Create a contract for Nidhi ($150/hr, $5000, 3 milestones)
+   - Switch to **Nidhi**: See only her contract. Submit a milestone.
+   - Switch to **Akash**: See **zero contracts** — Canton never sent the data to this node.
+   - Switch to **Eve (Auditor)**: See **zero contracts, zero payments**.
+   - Back to **Ethereum Foundation**: Approve milestone, then click "Generate Audit Summary".
+   - Switch to **Eve**: Now sees aggregate totals only (1 contract, $1,667 paid) — no individual details.
+4. Expand **"Privacy Comparison"** to see what each participant node has
+5. Expand **"Canton API Log"** to see the real JSON Ledger API v2 requests/responses
 
-```bash
-docker run --rm \
-  -v $(pwd)/freelancer-app/frontend:/workspace \
-  cantonlance-dev \
-  bash -c "cd /workspace && npm run build"
-```
-
-## How to Test Privacy
-
-1. Open `http://localhost:5173` in your browser
-2. Click **"Load Sample Contracts"** to create two contracts:
-   - Alice at $150/hr (Build payment microservice)
-   - Bob at $80/hr (Design landing page)
-3. **Client tab**: See both contracts with all details
-4. **Alice tab**: See ONLY Alice's contract at $150/hr. Bob is invisible.
-5. **Bob tab**: See ONLY Bob's contract at $80/hr. Alice is invisible.
-6. Submit milestones and approve payments to see the full flow
-7. Generate an Audit Summary, then switch to **Auditor tab**: See only totals, zero individual data
-8. Run the Daml Script test (see above) to verify programmatically
-
-## Daml Contract Details
-
-### ProjectContract
-```
-signatories: client, freelancer
-observers: none
-```
-When Client creates a contract with Freelancer A, Canton's protocol only sends the transaction to participant nodes hosting Client and Freelancer A. Freelancer B's node never receives any data.
-
-### PaymentRecord
-```
-signatories: client, freelancer
-observers: none
-```
-Each payment is only visible to its specific client-freelancer pair.
-
-### AuditSummary
-```
-signatory: client
-observer: auditor
-```
-The auditor sees aggregate totals only. They are NOT a signatory or observer on any ProjectContract or PaymentRecord.
-
-## Tech Stack
-
-- **Smart Contracts**: Daml 3.4.10 on Canton L1
-- **Frontend**: React 18 + TypeScript + Vite + Bootstrap 5
-- **Development**: Dockerized environment (no Nix required on host)
-- **Deployment**: Canton LocalNet (DevNet-ready architecture)
+---
 
 ## Project Structure
 
 ```
 freelancer-dapp/
-├── Dockerfile.dev              # Dev container (JDK 21, Node 20, Daml SDK)
-├── docker-compose.yml          # One-command frontend startup
-├── README.md
-└── freelancer-app/
-    ├── daml/freelance/         # Daml smart contracts
-    │   ├── daml.yaml
-    │   └── daml/
-    │       ├── Freelance.daml      # 4 templates (ProjectContract, PaymentRecord, AuditSummary, ProjectProposal)
-    │       └── FreelanceTest.daml  # Privacy model test script
-    └── frontend/src/cantonlance/   # React frontend
-        ├── CantonLanceApp.tsx      # Main app with party switcher
-        ├── PartySwitcher.tsx       # Party tab navigation
-        ├── ClientView.tsx          # Client dashboard
-        ├── FreelancerView.tsx      # Freelancer view (own data only)
-        ├── AuditorView.tsx         # Auditor view (summaries only)
-        ├── DemoSetup.tsx           # Quick demo data loader
-        ├── ActivityLog.tsx         # Transaction activity log
-        ├── store.tsx               # State management with privacy filtering
-        └── types.ts                # TypeScript type definitions
+|-- Dockerfile.dev              # Dev container (JDK 21, Node 20, Daml SDK 3.4.10)
+|-- docker-compose.yml          # Sandbox + frontend services
+|-- setup-local.sh              # Local sandbox: upload DAR, allocate parties, write config
+|-- deploy-devnet.sh            # DevNet: full deployment via SSH tunnel
+|-- tunnel-devnet.sh            # Standalone SSH tunnel helper
+|-- README.md
+|-- freelancer-app/
+    |-- daml/freelance/
+    |   |-- daml.yaml
+    |   |-- daml/
+    |       |-- Freelance.daml         # 4 templates: ProjectProposal, ProjectContract,
+    |       |                          #   PaymentRecord, AuditSummary
+    |       |-- FreelanceTest.daml     # Privacy model test script
+    |-- frontend/
+        |-- index.html
+        |-- vite.config.ts             # Dual proxy: /api/local + /api/devnet
+        |-- public/
+        |   |-- local-config.json      # Generated by setup-local.sh
+        |   |-- devnet-config.json     # Generated by deploy-devnet.sh
+        |-- src/
+            |-- main.tsx
+            |-- App.tsx
+            |-- cantonlance/
+                |-- CantonLanceApp.tsx      # Main app shell, navbar, hero section
+                |-- store.tsx              # React Context state + Canton API client
+                |-- cantonApi.ts           # Canton JSON Ledger API v2 client
+                |-- types.ts               # TypeScript types + party definitions
+                |-- PartySwitcher.tsx       # Party tab navigation
+                |-- ClientView.tsx         # Client dashboard (create, approve, audit)
+                |-- FreelancerView.tsx     # Freelancer view (own data only)
+                |-- AuditorView.tsx        # Auditor view (aggregates only)
+                |-- ApiProofPanel.tsx       # Real API request/response log
+                |-- PrivacyComparisonPanel.tsx  # 4-column privacy comparison
+                |-- ToastNotifications.tsx  # Toast notification system
+                |-- DemoGuide.tsx          # 8-step guided demo walkthrough
 ```
 
-## Deployment Notes
+## Tech Stack
 
-Built and tested on Canton LocalNet. Architecture is DevNet-ready — deployment requires SV node VPN access. The Daml contracts and privacy model are identical on LocalNet vs DevNet.
+- **Smart Contracts**: Daml 3.4.10 on Canton L1
+- **Frontend**: React 18 + TypeScript + Vite + Bootstrap 5 (CDN)
+- **API**: Canton JSON Ledger API v2 (real HTTP calls, no simulation)
+- **Dev Environment**: Docker (JDK 21, Node 20, Daml SDK — supports AMD64 + ARM64)
+- **Deployment**: Local sandbox + Canton DevNet (dual-environment support)
+
+## License
+
+Copyright (c) 2026. ETHDenver 2026 Hackathon Submission.

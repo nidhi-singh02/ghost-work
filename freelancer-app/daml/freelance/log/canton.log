@@ -21809,3 +21809,350 @@ ValidatedTopologyTransaction(
 2026-02-21 04:21:51,279 [canton-env-ec-39] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'e3a8449b-176d-4f1a-b495-4d13f70dc5a9'}
 2026-02-21 04:22:01,318 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:45986, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '719f171a-d2fc-4798-8146-477884341cd0'}
 2026-02-21 04:22:01,318 [canton-env-ec-45] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '719f171a-d2fc-4798-8146-477884341cd0'}
+2026-02-21 04:22:11,363 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:34450, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '136220c2-94d0-4dcc-a0e6-122526af2ff5'}
+2026-02-21 04:22:11,363 [canton-env-ec-39] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '136220c2-94d0-4dcc-a0e6-122526af2ff5'}
+2026-02-21 04:22:21,415 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:45162, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '11e9c752-13e0-4c4b-bcef-310cc6c8b3e9'}
+2026-02-21 04:22:21,415 [canton-env-ec-53] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '11e9c752-13e0-4c4b-bcef-310cc6c8b3e9'}
+2026-02-21 04:22:31,453 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:56412, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ee76bd5e-d8ef-41f0-857b-25f92dfb8a96'}
+2026-02-21 04:22:31,454 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ee76bd5e-d8ef-41f0-857b-25f92dfb8a96'}
+2026-02-21 04:22:41,499 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:55164, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '24e2be85-a377-4ffd-aa8a-cc61a449f778'}
+2026-02-21 04:22:41,500 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '24e2be85-a377-4ffd-aa8a-cc61a449f778'}
+2026-02-21 04:22:51,546 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:47534, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'eb4f3ce5-8032-4423-a96f-1936f3b48cdb'}
+2026-02-21 04:22:51,546 [canton-env-ec-39] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'eb4f3ce5-8032-4423-a96f-1936f3b48cdb'}
+2026-02-21 04:23:01,589 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:37570, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f3460e51-6948-4fc2-981e-16727ae57929'}
+2026-02-21 04:23:01,589 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f3460e51-6948-4fc2-981e-16727ae57929'}
+2026-02-21 04:23:11,628 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:41926, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f4d5b11c-0c24-4674-b6a7-b698645569ea'}
+2026-02-21 04:23:11,629 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f4d5b11c-0c24-4674-b6a7-b698645569ea'}
+2026-02-21 04:23:21,668 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:48686, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c9eab197-9339-4e58-a5a3-13e0176a05a4'}
+2026-02-21 04:23:21,668 [canton-env-ec-46] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c9eab197-9339-4e58-a5a3-13e0176a05a4'}
+2026-02-21 04:23:31,716 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:41948, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '96dda94f-0f48-4d1a-8bc5-840fdacca2b5'}
+2026-02-21 04:23:31,718 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '96dda94f-0f48-4d1a-8bc5-840fdacca2b5'}
+2026-02-21 04:23:41,753 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:54264, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '2a1f038b-a321-425a-b0cf-de4a2eba67f5'}
+2026-02-21 04:23:41,753 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '2a1f038b-a321-425a-b0cf-de4a2eba67f5'}
+2026-02-21 04:23:51,802 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:32890, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6127a828-a506-4d72-9872-ce687e28e93d'}
+2026-02-21 04:23:51,802 [canton-env-ec-84] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6127a828-a506-4d72-9872-ce687e28e93d'}
+2026-02-21 04:24:01,841 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:33706, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'e864b098-0690-48f8-9126-d97fd096b95d'}
+2026-02-21 04:24:01,841 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'e864b098-0690-48f8-9126-d97fd096b95d'}
+2026-02-21 04:24:11,891 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:59714, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ccc7836e-0ef7-4cc4-8a6b-793344695335'}
+2026-02-21 04:24:11,891 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ccc7836e-0ef7-4cc4-8a6b-793344695335'}
+2026-02-21 04:24:21,940 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:60686, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'e3ace2ca-91ed-4e31-94e8-a974e1d865e4'}
+2026-02-21 04:24:21,940 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'e3ace2ca-91ed-4e31-94e8-a974e1d865e4'}
+2026-02-21 04:24:31,983 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:57534, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '91361353-9aed-4ed9-a462-d885f335b2be'}
+2026-02-21 04:24:31,984 [canton-env-ec-48] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '91361353-9aed-4ed9-a462-d885f335b2be'}
+2026-02-21 04:24:42,030 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:47166, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6770291d-699c-4142-a1c2-1c72fca9c48b'}
+2026-02-21 04:24:42,031 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6770291d-699c-4142-a1c2-1c72fca9c48b'}
+2026-02-21 04:24:52,080 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:43506, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c25f9e8f-3e59-44f4-88c5-271dbf556ca9'}
+2026-02-21 04:24:52,080 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c25f9e8f-3e59-44f4-88c5-271dbf556ca9'}
+2026-02-21 04:25:02,127 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:35454, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '9fbffd22-0c7d-4e5c-a335-d1ab2013f520'}
+2026-02-21 04:25:02,127 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '9fbffd22-0c7d-4e5c-a335-d1ab2013f520'}
+2026-02-21 04:25:12,164 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:51794, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '49b68e91-de96-40b1-ab52-a1ee327c0fe4'}
+2026-02-21 04:25:12,164 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '49b68e91-de96-40b1-ab52-a1ee327c0fe4'}
+2026-02-21 04:25:22,203 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:48180, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ff2ef3cd-6462-4430-af54-e5fcc4ee96ae'}
+2026-02-21 04:25:22,203 [canton-env-ec-46] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ff2ef3cd-6462-4430-af54-e5fcc4ee96ae'}
+2026-02-21 04:25:32,254 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:53264, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '139a2a9c-bf78-4437-a799-1f83400c8dad'}
+2026-02-21 04:25:32,255 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '139a2a9c-bf78-4437-a799-1f83400c8dad'}
+2026-02-21 04:25:42,303 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:37000, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f7819d0b-7df7-4479-b07f-f5d2356ea3b7'}
+2026-02-21 04:25:42,303 [canton-env-ec-39] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f7819d0b-7df7-4479-b07f-f5d2356ea3b7'}
+2026-02-21 04:25:52,344 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:59040, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ff629dc7-64a8-4d40-8e55-89a93742b064'}
+2026-02-21 04:25:52,344 [canton-env-ec-52] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'ff629dc7-64a8-4d40-8e55-89a93742b064'}
+2026-02-21 04:26:02,380 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:34420, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'b147f77a-da69-4722-a671-a1f15df71044'}
+2026-02-21 04:26:02,381 [canton-env-ec-46] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'b147f77a-da69-4722-a671-a1f15df71044'}
+2026-02-21 04:26:12,433 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:49038, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '7dd4f29c-a87c-4ffe-8cb6-e40b422a0b81'}
+2026-02-21 04:26:12,433 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '7dd4f29c-a87c-4ffe-8cb6-e40b422a0b81'}
+2026-02-21 04:26:12,535 [canton-env-ec-41] INFO  c.d.c.p.a.s.ApiStateService:participant=sandbox tid:2a3c672486dd78de67e4600f64163d3e - Received request for active contracts: GetActiveContractsRequest(28,Some(EventFormat(Map(Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e -> Filters(Vector(CumulativeFilter(WildcardFilter(WildcardFilter(false)))))),None,true))), filters -> {Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}.
+2026-02-21 04:26:22,489 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:59014, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'a5e28009-55a5-4941-abb8-0d912a1b39e4'}
+2026-02-21 04:26:22,490 [canton-env-ec-41] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'a5e28009-55a5-4941-abb8-0d912a1b39e4'}
+2026-02-21 04:26:32,536 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:54220, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '283f5e0c-fda3-4e3d-9d6f-63eeee7c2ec0'}
+2026-02-21 04:26:32,537 [canton-env-ec-45] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '283f5e0c-fda3-4e3d-9d6f-63eeee7c2ec0'}
+2026-02-21 04:26:42,584 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:59352, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '38daab06-bdd7-44bf-aea3-baf300d2e776'}
+2026-02-21 04:26:42,585 [canton-env-ec-40] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '38daab06-bdd7-44bf-aea3-baf300d2e776'}
+2026-02-21 04:26:49,801 [canton-env-ec-41] INFO  c.d.c.p.a.s.c.CommandSubmissionServiceImpl:participant=sandbox tid:dfb9e843df270c17b68c5d7f89c430be - Phase 1 started: Submitting commands for interpretation: Commands(
+  commandId = create-proposal-1771648009784,
+  submissionId = proposal-1771648009784,
+  userId = client_user,
+  actAs = Client_EthFoundation::1220732d70f9...,
+  submittedAt = 2026-02-21T04:26:49.800902Z,
+  ledgerEffectiveTime = 2026-02-21T04:26:49.800901Z,
+  deduplicationPeriod = (duration=PT168H),
+  workflowId = cantonlance-proposal,
+  ...
+).
+2026-02-21 04:26:49,803 [canton-env-ec-53] INFO  c.d.c.p.s.CantonSyncService:participant=sandbox tid:dfb9e843df270c17b68c5d7f89c430be - Routing state contains connected synchronizers mysynchronizer::122036503506...::34-0 and topology mysynchronizer::122036503506...::34-0 at 2026-02-21T04:21:09.448120Z
+2026-02-21 04:26:49,830 [canton-env-ec-47] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 1 completed: Submitting 3 envelopes for Transaction request, submitters Client_EthFoundation::1220732d70f9..., command-id create-proposal-1771648009784
+2026-02-21 04:26:49,836 [canton-env-ec-46] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:dfb9e843df270c17b68c5d7f89c430be - 'PAR::sandbox::1220732d70f9...' sends request with id '73f95757-ee06-42da-b44e-0415c9bfafe5' of size 2556 bytes with 3 envelopes.
+2026-02-21 04:26:49,913 [canton-env-ec-41] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing block 24, data chunk 0. Last chunk timestamp=2026-02-21T04:21:09.448119Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of '73f95757-ee06-42da-b44e-0415c9bfafe5' at 2026-02-21T04:26:49.838056Z (tc=dfb9e843df270c17b68c5d7f89c430be)
+2026-02-21 04:26:49,927 [canton-env-ec-84] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing event at sc=18, ts=2026-02-21T04:26:49.838056Z, messageId=73f95757-ee06-42da-b44e-0415c9bfafe5, with contents=Seq(
+  RootHashMessage(root hash = SHA-256:52e410f8c6b3..., payload size = 0),
+  EncryptedViewMessage(
+    view hash = ViewHash(SHA-256:7b800331a216...),
+    view type = TransactionViewType,
+    size = 1097,
+    psid = mysynchronizer::122036503506...::34-0,
+    number of session keys = 1,
+    view encryption scheme = AES128-GCM
+  )
+)
+2026-02-21 04:26:49,928 [canton-env-ec-38] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 3: Validating Transaction request=2026-02-21T04:26:49.838056Z with 1 envelope(s)
+2026-02-21 04:26:49,933 [canton-env-ec-40] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 2: Registered request=2026-02-21T04:26:49.838056Z with 1 view(s). Initial state: ViewPosition("") -> ViewState(
+  quorumsState = Quorum(confirmers = Map(Client_EthFoundation::1220732d70f9... -> 1, sandbox::1220732d70f9... -> 1), threshold = 2),
+  consortiumVoting = Map(Client_EthFoundation::1220732d70f9... -> ConsortiumVotingState(), sandbox::1220732d70f9... -> ConsortiumVotingState()),
+  rejections = Seq()
+)
+2026-02-21 04:26:49,934 [canton-env-ec-47] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Declared submission topology timestamp 2026-02-21T04:21:09.448120Z is too far in the past (minimum accepted: 2026-02-21T04:24:49.838056Z). Ignoring. Note: this delay can be adjusted with the `topology-change-warn-delay` configuration parameter.
+2026-02-21 04:26:49,943 [canton-env-ec-48] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 4: Sending for request=2026-02-21T04:26:49.838056Z with msgId=fd6b2b6d-adf3-4f18-971e-e0e2bf13696b approved=1, rejected=0, abstained=0
+2026-02-21 04:26:49,946 [canton-env-ec-39] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:dfb9e843df270c17b68c5d7f89c430be - 'PAR::sandbox::1220732d70f9...' sends request with id 'fd6b2b6d-adf3-4f18-971e-e0e2bf13696b' of size 763 bytes with 1 envelopes.
+2026-02-21 04:26:50,033 [canton-env-ec-85] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing block 25, data chunk 0. Last chunk timestamp=2026-02-21T04:26:49.838056Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of 'fd6b2b6d-adf3-4f18-971e-e0e2bf13696b' at 2026-02-21T04:26:49.947901Z (tc=dfb9e843df270c17b68c5d7f89c430be)
+2026-02-21 04:26:50,042 [canton-env-ec-48] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing event at sc=19, ts=2026-02-21T04:26:49.947901Z, messageId=fd6b2b6d-adf3-4f18-971e-e0e2bf13696b, with contents=Seq()
+2026-02-21 04:26:50,044 [canton-env-ec-41] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 5: Received responses for request=2026-02-21T04:26:49.838056Z: ConfirmationResponses(
+  requestId = RequestId(2026-02-21T04:26:49.838056Z),
+  rootHash = SHA-256:52e410f8c6b3...,
+  sender = PAR::sandbox::1220732d70f9...,
+  psid = mysynchronizer::122036503506...::34-0,
+  responses = ConfirmationResponse(viewPosition = ViewPosition(""), localVerdict = LocalApprove(), confirmingParties = Set(Client_EthFoundation::1220732d70f9..., sandbox::1220732d70f9...))
+)
+2026-02-21 04:26:50,045 [canton-env-ec-84] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Phase 6: Finalized request=RequestId(2026-02-21T04:26:49.838056Z) with verdict Approve
+2026-02-21 04:26:50,050 [canton-env-ec-50] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:dfb9e843df270c17b68c5d7f89c430be - 'MED::mediator1::122012446f39...' sends request with id '1b9995b0-59b5-4825-a5bd-72d4a4020787' of size 720 bytes with 1 envelopes.
+2026-02-21 04:26:50,153 [canton-env-ec-50] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing block 26, data chunk 0. Last chunk timestamp=2026-02-21T04:26:49.947901Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of '1b9995b0-59b5-4825-a5bd-72d4a4020787' at 2026-02-21T04:26:50.051964Z (tc=dfb9e843df270c17b68c5d7f89c430be)
+2026-02-21 04:26:50,163 [canton-env-ec-39] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Processing event at sc=20, ts=2026-02-21T04:26:50.051964Z, with contents=SignedProtocolMessage(
+  ConfirmationResultMessage(
+    psid = mysynchronizer::122036503506...::34-0,
+    viewType = TransactionViewType,
+    requestId = 2026-02-21T04:26:49.838056Z,
+    rootHash = SHA-256:52e410f8c6b3...,
+    verdict = Approve
+  ),
+  signatures = Signature(signature = e728d840541b, format = Concat, signedBy = 12208d6b5e2d..., signingAlgorithmSpec = Some(Ed25519))
+)
+2026-02-21 04:26:50,165 [canton-env-ec-53] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Finalizing Transaction request=2026-02-21T04:26:49.838056Z.
+2026-02-21 04:26:50,167 [canton-env-ec-38] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - About to wrap up request RequestId(2026-02-21T04:26:49.838056Z) with event Some(
+  SequencedTransactionAccepted(
+    recordTime = 2026-02-21T04:26:49.838056Z,
+    updateId = 122052e410f8c6b3b60df78f28ad8b8632cb28582f5bbda9fd0f8ad5467b3c905e9a,
+    transactionMeta = TransactionMeta(
+      ledgerEffectiveTime = 2026-02-21T04:26:49.800901Z,
+      workflowId = cantonlance-proposal,
+      preparationTime = 2026-02-21T04:26:49.800901Z,
+      timeBoundaries = LedgerTimeBoundaries(constrained = true),
+      ...
+    ),
+    completion = CompletionInfo(
+      actAs = Client_EthFoundation::1220732d70f9...,
+      commandId = create-proposal-1771648009784,
+      userId = client_user,
+      deduplication period = (offset=None),
+      submissionId = Some(proposal-1771648009784),
+      ...
+    ),
+    nodes = 1,
+    roots = 1,
+    ...
+  )
+)
+2026-02-21 04:26:50,169 [canton-env-ec-53] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:dfb9e843df270c17b68c5d7f89c430be - Finished async result processing of request RequestId(2026-02-21T04:26:49.838056Z)
+2026-02-21 04:26:50,169 [input-mapping-pool-13] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:dfb9e843df270c17b68c5d7f89c430be - Storing at offset=30 SequencerIndexMoved(synchronizerId = mysynchronizer::122036503506..., sequencerTimestamp = 2026-02-21T04:26:49.947901Z)
+2026-02-21 04:26:50,169 [input-mapping-pool-12] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:dfb9e843df270c17b68c5d7f89c430be - Phase 7: Storing at offset=29 SequencedTransactionAccepted(
+  recordTime = 2026-02-21T04:26:49.838056Z,
+  updateId = 122052e410f8c6b3b60df78f28ad8b8632cb28582f5bbda9fd0f8ad5467b3c905e9a,
+  transactionMeta = TransactionMeta(
+    ledgerEffectiveTime = 2026-02-21T04:26:49.800901Z,
+    workflowId = cantonlance-proposal,
+    preparationTime = 2026-02-21T04:26:49.800901Z,
+    timeBoundaries = LedgerTimeBoundaries(constrained = true),
+    ...
+  ),
+  completion = CompletionInfo(
+    actAs = Client_EthFoundation::1220732d70f9...,
+    commandId = create-proposal-1771648009784,
+    userId = client_user,
+    deduplication period = (offset=None),
+    submissionId = Some(proposal-1771648009784),
+    ...
+  ),
+  nodes = 1,
+  roots = 1,
+  ...
+)
+2026-02-21 04:26:50,170 [input-mapping-pool-12] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:dfb9e843df270c17b68c5d7f89c430be - Storing at offset=31 SequencerIndexMoved(synchronizerId = mysynchronizer::122036503506..., sequencerTimestamp = 2026-02-21T04:26:50.051964Z)
+2026-02-21 04:26:50,174 [canton-env-ec-39] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Persisted ACS commitments at RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808) with CommitmentSnapshot(
+  record time = RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808),
+  active = Map(Set(4, 7) -> 9b0f4ac4e19d, Set(4, 5) -> 72e057654922),
+  delta (parties) = Set(4, 7),
+  deleted = Set()
+) in mode Checkpoint
+2026-02-21 04:26:50,174 [canton-env-ec-47] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Persisted ACS commitments at RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808) with CommitmentSnapshot(
+  record time = RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808),
+  active = Map(Set(4, 7) -> 9b0f4ac4e19d, Set(4, 5) -> 72e057654922),
+  delta (parties) = Set(4, 7),
+  deleted = Set()
+) in mode Checkpoint
+2026-02-21 04:26:50,175 [canton-env-ec-41] INFO  c.d.c.p.a.s.ApiUpdateService:participant=sandbox - Received request for update by ID, updateFormat -> {transaction format: [{filters: {Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}, transactionShape: 'AcsDelta'}], reassignment filters: [], topology format: []}.
+2026-02-21 04:26:50,176 [canton-env-ec-45] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Processing completed period CommitmentPeriod(fromExclusive = 2026-02-21T04:21:00Z, toInclusive = 2026-02-21T04:26:00Z). Modes: in catch-up mode = false, and if yes, caught up to catch-up boundary false
+2026-02-21 04:26:50,176 [canton-env-ec-47] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Computing commitments for CommitmentPeriod(fromExclusive = 2026-02-21T04:21:00Z, toInclusive = 2026-02-21T04:26:00Z), number of stakeholder sets: 2
+2026-02-21 04:26:50,178 [canton-env-ec-50] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Computed and stored 0 commitment messages for period CommitmentPeriod(fromExclusive = 2026-02-21T04:21:00Z, toInclusive = 2026-02-21T04:26:00Z)
+2026-02-21 04:26:50,181 [canton-env-ec-85] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Persisted ACS commitments at RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808) with CommitmentSnapshot(
+  record time = RecordTime(timestamp = 2026-02-21T04:21:09.208612Z, tieBreaker = -9223372036854775808),
+  active = Map(Set(4, 7) -> 9b0f4ac4e19d, Set(4, 5) -> 72e057654922),
+  delta (parties) = Set(4, 7),
+  deleted = Set()
+) in mode Efficiency
+2026-02-21 04:26:50,181 [canton-env-ec-45] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Processing 0 remote commitments
+2026-02-21 04:26:50,181 [canton-env-ec-45] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Checked buffered remote commitments up to 2026-02-21T04:26:00Z inclusive and ready to check further ones without buffering
+2026-02-21 04:26:50,181 [canton-env-ec-52] INFO  c.d.c.p.p.AcsCommitmentProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:8ebddbb98dfdbb49fa28904c4beffce7 - Deleted buffered commitments and set last computed and sent timestamp set to 2026-02-21T04:26:00Z
+2026-02-21 04:26:50,187 [canton-env-ec-47] INFO  c.d.c.p.a.s.c.CommandSubmissionServiceImpl:participant=sandbox tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 1 started: Submitting commands for interpretation: Commands(
+  commandId = accept-proposal-1771648010181,
+  submissionId = accept-1771648010181,
+  userId = freelancerA_user,
+  actAs = FreelancerA_Nidhi::1220732d70f9...,
+  submittedAt = 2026-02-21T04:26:50.186935Z,
+  ledgerEffectiveTime = 2026-02-21T04:26:50.186934Z,
+  deduplicationPeriod = (duration=PT168H),
+  workflowId = cantonlance-accept,
+  ...
+).
+2026-02-21 04:26:50,187 [canton-env-ec-41] INFO  c.d.c.p.s.CantonSyncService:participant=sandbox tid:b02a5e1b1e8cd5dda41cd88594d2378e - Routing state contains connected synchronizers mysynchronizer::122036503506...::34-0 and topology mysynchronizer::122036503506...::34-0 at 2026-02-21T04:26:50.051965Z
+2026-02-21 04:26:50,203 [canton-env-ec-47] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 1 completed: Submitting 3 envelopes for Transaction request, submitters FreelancerA_Nidhi::1220732d70f9..., command-id accept-proposal-1771648010181
+2026-02-21 04:26:50,206 [canton-env-ec-46] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:b02a5e1b1e8cd5dda41cd88594d2378e - 'PAR::sandbox::1220732d70f9...' sends request with id '216fca3a-3783-44ef-842a-16cf4fb16d3f' of size 2788 bytes with 3 envelopes.
+2026-02-21 04:26:50,274 [canton-env-ec-47] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing block 27, data chunk 0. Last chunk timestamp=2026-02-21T04:26:50.051964Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of '216fca3a-3783-44ef-842a-16cf4fb16d3f' at 2026-02-21T04:26:50.207820Z (tc=b02a5e1b1e8cd5dda41cd88594d2378e)
+2026-02-21 04:26:50,284 [canton-env-ec-48] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing event at sc=21, ts=2026-02-21T04:26:50.207820Z, messageId=216fca3a-3783-44ef-842a-16cf4fb16d3f, with contents=Seq(
+  RootHashMessage(root hash = SHA-256:2c6bfc85d92d..., payload size = 0),
+  EncryptedViewMessage(
+    view hash = ViewHash(SHA-256:56f09005625c...),
+    view type = TransactionViewType,
+    size = 1317,
+    psid = mysynchronizer::122036503506...::34-0,
+    number of session keys = 1,
+    view encryption scheme = AES128-GCM
+  )
+)
+2026-02-21 04:26:50,285 [canton-env-ec-48] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 3: Validating Transaction request=2026-02-21T04:26:50.207820Z with 1 envelope(s)
+2026-02-21 04:26:50,287 [canton-env-ec-40] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 2: Registered request=2026-02-21T04:26:50.207820Z with 1 view(s). Initial state: ViewPosition("") -> ViewState(
+  quorumsState = Seq(
+    Quorum(confirmers = Map(Client_EthFoundation::1220732d70f9... -> 1, FreelancerA_Nidhi::1220732d70f9... -> 1, sandbox::1220732d70f9... -> 1), threshold = 3),
+    Quorum(confirmers = Map(Client_EthFoundation::1220732d70f9... -> 1, FreelancerA_Nidhi::1220732d70f9... -> 1), threshold = 2)
+  ),
+  consortiumVoting = Map(
+    Client_EthFoundation::1220732d70f9... -> ConsortiumVotingState(),
+    FreelancerA_Nidhi::1220732d70f9... -> ConsortiumVotingState(),
+    sandbox::1220732d70f9... -> ConsortiumVotingState()
+  ),
+  rejections = Seq()
+)
+2026-02-21 04:26:50,297 [canton-env-ec-50] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 4: Sending for request=2026-02-21T04:26:50.207820Z with msgId=8c7f83f5-b76c-47d9-bd22-035bcd78df15 approved=1, rejected=0, abstained=0
+2026-02-21 04:26:50,301 [canton-env-ec-39] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:b02a5e1b1e8cd5dda41cd88594d2378e - 'PAR::sandbox::1220732d70f9...' sends request with id '8c7f83f5-b76c-47d9-bd22-035bcd78df15' of size 784 bytes with 1 envelopes.
+2026-02-21 04:26:50,392 [canton-env-ec-52] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing block 28, data chunk 0. Last chunk timestamp=2026-02-21T04:26:50.207820Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of '8c7f83f5-b76c-47d9-bd22-035bcd78df15' at 2026-02-21T04:26:50.302218Z (tc=b02a5e1b1e8cd5dda41cd88594d2378e)
+2026-02-21 04:26:50,401 [canton-env-ec-41] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing event at sc=22, ts=2026-02-21T04:26:50.302218Z, messageId=8c7f83f5-b76c-47d9-bd22-035bcd78df15, with contents=Seq()
+2026-02-21 04:26:50,402 [canton-env-ec-46] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 5: Received responses for request=2026-02-21T04:26:50.207820Z: ConfirmationResponses(
+  requestId = RequestId(2026-02-21T04:26:50.207820Z),
+  rootHash = SHA-256:2c6bfc85d92d...,
+  sender = PAR::sandbox::1220732d70f9...,
+  psid = mysynchronizer::122036503506...::34-0,
+  responses = ConfirmationResponse(
+    viewPosition = ViewPosition(""),
+    localVerdict = LocalApprove(),
+    confirmingParties = Set(Client_EthFoundation::1220732d70f9..., FreelancerA_Nidhi::1220732d70f9..., sandbox::1220732d70f9...)
+  )
+)
+2026-02-21 04:26:50,403 [canton-env-ec-45] INFO  c.d.c.s.m.ConfirmationRequestAndResponseProcessor:mediator=mediator1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 6: Finalized request=RequestId(2026-02-21T04:26:50.207820Z) with verdict Approve
+2026-02-21 04:26:50,407 [canton-env-ec-85] INFO  c.d.c.s.s.s.GrpcSequencerService:sequencer=sequencer1 tid:b02a5e1b1e8cd5dda41cd88594d2378e - 'MED::mediator1::122012446f39...' sends request with id '585fc222-80bf-491c-9358-d76a2e01e3cb' of size 715 bytes with 1 envelopes.
+2026-02-21 04:26:50,512 [canton-env-ec-48] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing block 29, data chunk 0. Last chunk timestamp=2026-02-21T04:26:50.302218Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Send of '585fc222-80bf-491c-9358-d76a2e01e3cb' at 2026-02-21T04:26:50.408831Z (tc=b02a5e1b1e8cd5dda41cd88594d2378e)
+2026-02-21 04:26:50,521 [canton-env-ec-48] INFO  c.d.c.p.p.ParallelMessageDispatcher:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Processing event at sc=23, ts=2026-02-21T04:26:50.408831Z, with contents=SignedProtocolMessage(
+  ConfirmationResultMessage(
+    psid = mysynchronizer::122036503506...::34-0,
+    viewType = TransactionViewType,
+    requestId = 2026-02-21T04:26:50.207820Z,
+    rootHash = SHA-256:2c6bfc85d92d...,
+    verdict = Approve
+  ),
+  signatures = Signature(signature = 65cc3464b6dc, format = Concat, signedBy = 12208d6b5e2d..., signingAlgorithmSpec = Some(Ed25519))
+)
+2026-02-21 04:26:50,525 [canton-env-ec-50] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Finalizing Transaction request=2026-02-21T04:26:50.207820Z.
+2026-02-21 04:26:50,527 [canton-env-ec-52] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - About to wrap up request RequestId(2026-02-21T04:26:50.207820Z) with event Some(
+  SequencedTransactionAccepted(
+    recordTime = 2026-02-21T04:26:50.207820Z,
+    updateId = 12202c6bfc85d92d829e4f7c4aef6abf9f482b3651d11ba827dd8ba18f4da8c39b39,
+    transactionMeta = TransactionMeta(
+      ledgerEffectiveTime = 2026-02-21T04:26:50.186934Z,
+      workflowId = cantonlance-accept,
+      preparationTime = 2026-02-21T04:26:50.186934Z,
+      timeBoundaries = LedgerTimeBoundaries(constrained = true),
+      ...
+    ),
+    completion = CompletionInfo(
+      actAs = FreelancerA_Nidhi::1220732d70f9...,
+      commandId = accept-proposal-1771648010181,
+      userId = freelancerA_user,
+      deduplication period = (offset=None),
+      submissionId = Some(accept-1771648010181),
+      ...
+    ),
+    nodes = 2,
+    roots = 1,
+    ...
+  )
+)
+2026-02-21 04:26:50,528 [canton-env-ec-39] INFO  c.d.c.p.p.TransactionProcessor:participant=sandbox/psid=mysynchronizer::122036503506::34-0 tid:b02a5e1b1e8cd5dda41cd88594d2378e - Finished async result processing of request RequestId(2026-02-21T04:26:50.207820Z)
+2026-02-21 04:26:50,528 [input-mapping-pool-2] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:b02a5e1b1e8cd5dda41cd88594d2378e - Storing at offset=33 SequencerIndexMoved(synchronizerId = mysynchronizer::122036503506..., sequencerTimestamp = 2026-02-21T04:26:50.302218Z)
+2026-02-21 04:26:50,528 [input-mapping-pool-15] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:b02a5e1b1e8cd5dda41cd88594d2378e - Phase 7: Storing at offset=32 SequencedTransactionAccepted(
+  recordTime = 2026-02-21T04:26:50.207820Z,
+  updateId = 12202c6bfc85d92d829e4f7c4aef6abf9f482b3651d11ba827dd8ba18f4da8c39b39,
+  transactionMeta = TransactionMeta(
+    ledgerEffectiveTime = 2026-02-21T04:26:50.186934Z,
+    workflowId = cantonlance-accept,
+    preparationTime = 2026-02-21T04:26:50.186934Z,
+    timeBoundaries = LedgerTimeBoundaries(constrained = true),
+    ...
+  ),
+  completion = CompletionInfo(
+    actAs = FreelancerA_Nidhi::1220732d70f9...,
+    commandId = accept-proposal-1771648010181,
+    userId = freelancerA_user,
+    deduplication period = (offset=None),
+    submissionId = Some(accept-1771648010181),
+    ...
+  ),
+  nodes = 2,
+  roots = 1,
+  ...
+)
+2026-02-21 04:26:50,528 [input-mapping-pool-1] INFO  c.d.c.p.i.p.ParallelIndexerSubscription:participant=sandbox tid:b02a5e1b1e8cd5dda41cd88594d2378e - Storing at offset=34 SequencerIndexMoved(synchronizerId = mysynchronizer::122036503506..., sequencerTimestamp = 2026-02-21T04:26:50.408831Z)
+2026-02-21 04:26:50,534 [canton-env-ec-85] INFO  c.d.c.p.a.s.ApiUpdateService:participant=sandbox - Received request for update by ID, updateFormat -> {transaction format: [{filters: {FreelancerA_Nidhi::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}, transactionShape: 'AcsDelta'}], reassignment filters: [], topology format: []}.
+2026-02-21 04:26:50,556 [canton-env-ec-53] INFO  c.d.c.p.a.s.ApiStateService:participant=sandbox tid:d086d9d3feea65d39e0a698396992a1e - Received request for active contracts: GetActiveContractsRequest(34,Some(EventFormat(Map(Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e -> Filters(Vector(CumulativeFilter(WildcardFilter(WildcardFilter(false)))))),None,true))), filters -> {Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}.
+2026-02-21 04:26:52,631 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:36384, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '2d012c7f-7601-43b1-84a7-1a98ccb60f54'}
+2026-02-21 04:26:52,631 [canton-env-ec-85] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '2d012c7f-7601-43b1-84a7-1a98ccb60f54'}
+2026-02-21 04:27:02,678 [http-json-ledger-api-pekko.actor.default-dispatcher-13] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:42884, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c7387386-7b66-4d25-a697-27b5e1d89862'}
+2026-02-21 04:27:02,679 [canton-env-ec-85] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'c7387386-7b66-4d25-a697-27b5e1d89862'}
+2026-02-21 04:27:12,733 [http-json-ledger-api-pekko.actor.default-dispatcher-12] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:58438, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '44820e95-cf18-48c0-a407-55f0de227b8b'}
+2026-02-21 04:27:12,733 [canton-env-ec-84] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '44820e95-cf18-48c0-a407-55f0de227b8b'}
+2026-02-21 04:27:12,737 [canton-env-ec-53] INFO  c.d.c.p.a.s.ApiStateService:participant=sandbox tid:bc7769caf490faef8d5469191ef9da9e - Received request for active contracts: GetActiveContractsRequest(34,Some(EventFormat(Map(FreelancerA_Nidhi::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e -> Filters(Vector(CumulativeFilter(WildcardFilter(WildcardFilter(false)))))),None,true))), filters -> {FreelancerA_Nidhi::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}.
+2026-02-21 04:27:18,219 [canton-env-ec-41] INFO  c.d.c.p.a.s.ApiStateService:participant=sandbox tid:5be28a2a7f5bcbaec49e0a0f09a00765 - Received request for active contracts: GetActiveContractsRequest(34,Some(EventFormat(Map(FreelancerB_Akash::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e -> Filters(Vector(CumulativeFilter(WildcardFilter(WildcardFilter(false)))))),None,true))), filters -> {FreelancerB_Akash::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}.
+2026-02-21 04:27:21,824 [canton-env-ec-84] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:edb62a4721585511c9851d7615eeb10a - Processing block 30, data chunk 0. Last chunk timestamp=2026-02-21T04:26:50.408831Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Ack by MED::mediator1::122012446f39... for 2026-02-21T04:26:50.408831Z
+2026-02-21 04:27:22,200 [canton-env-ec-49] INFO  c.d.c.p.a.s.ApiStateService:participant=sandbox tid:71b922c58ec821238ad1a13e88118c27 - Received request for active contracts: GetActiveContractsRequest(34,Some(EventFormat(Map(Auditor_Eve::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e -> Filters(Vector(CumulativeFilter(WildcardFilter(WildcardFilter(false)))))),None,true))), filters -> {Auditor_Eve::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e: {templates: [], interfaces: [], all-templates, created_event_blob: false}}.
+2026-02-21 04:27:22,663 [canton-env-ec-48] INFO  c.d.c.s.b.u.BlockChunkProcessor:sequencer=sequencer1/psid=mysynchronizer::122036503506::34-0 tid:8dcec4ed5bbdd222761c9c50ace55545 - Processing block 31, data chunk 0. Last chunk timestamp=2026-02-21T04:26:50.408831Z, last sequencer event timestamp=Some(2026-02-21T04:10:33.112962Z). 1 events:
+  Ack by PAR::sandbox::1220732d70f9... for 2026-02-21T04:26:50.408831Z
+2026-02-21 04:27:22,772 [http-json-ledger-api-pekko.actor.default-dispatcher-11] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:32860, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f6e9cd4d-5683-4416-a410-f69f2de8ec32'}
+2026-02-21 04:27:22,772 [canton-env-ec-53] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'f6e9cd4d-5683-4416-a410-f69f2de8ec32'}
+2026-02-21 04:27:32,814 [http-json-ledger-api-pekko.actor.default-dispatcher-11] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:45654, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '8a34602d-4fb0-436e-b366-4a140b896413'}
+2026-02-21 04:27:32,814 [canton-env-ec-53] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '8a34602d-4fb0-436e-b366-4a140b896413'}
+2026-02-21 04:27:42,857 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:43078, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '55a4a9e4-1ee0-46a0-96ed-5a56377d5423'}
+2026-02-21 04:27:42,858 [canton-env-ec-47] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '55a4a9e4-1ee0-46a0-96ed-5a56377d5423'}
+2026-02-21 04:27:52,903 [http-json-ledger-api-pekko.actor.default-dispatcher-11] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:34124, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6d9802bc-fe8b-4de8-a852-7839730c344f'}
+2026-02-21 04:27:52,903 [canton-env-ec-85] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '6d9802bc-fe8b-4de8-a852-7839730c344f'}
+2026-02-21 04:28:02,951 [http-json-ledger-api-pekko.actor.default-dispatcher-11] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:42280, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'd5648025-cdab-4a38-bb7b-c11772fd321c'}
+2026-02-21 04:28:02,951 [canton-env-ec-40] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> 'd5648025-cdab-4a38-bb7b-c11772fd321c'}
+2026-02-21 04:28:13,003 [http-json-ledger-api-pekko.actor.default-dispatcher-10] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:57508, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '1f0e0a83-c273-4aac-94d4-21771f3b7e56'}
+2026-02-21 04:28:13,003 [canton-env-ec-39] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '1f0e0a83-c273-4aac-94d4-21771f3b7e56'}
+2026-02-21 04:28:23,052 [http-json-ledger-api-pekko.actor.default-dispatcher-9] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:33520, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '5e8e52ab-a8ee-4434-9b9a-a4e3d3d9ad55'}
+2026-02-21 04:28:23,053 [canton-env-ec-38] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '5e8e52ab-a8ee-4434-9b9a-a4e3d3d9ad55'}
+2026-02-21 04:28:33,094 [http-json-ledger-api-pekko.actor.default-dispatcher-10] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:34292, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '55f6ea02-1b6e-433c-b167-1df403f58cd2'}
+2026-02-21 04:28:33,095 [canton-env-ec-84] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '55f6ea02-1b6e-433c-b167-1df403f58cd2'}
+2026-02-21 04:28:43,139 [http-json-ledger-api-pekko.actor.default-dispatcher-11] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:45012, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '44e7672b-0b01-4001-aa10-e8fd34d6824a'}
+2026-02-21 04:28:43,139 [canton-env-ec-85] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '44e7672b-0b01-4001-aa10-e8fd34d6824a'}
+2026-02-21 04:28:53,183 [http-json-ledger-api-pekko.actor.default-dispatcher-10] INFO  c.d.c.h.Endpoints:participant=sandbox - Incoming GET request on http://localhost:6870/livez from 127.0.0.1:57048, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '71d614d8-dd4b-4cbd-87e7-9f0c55d80ded'}
+2026-02-21 04:28:53,183 [canton-env-ec-53] INFO  c.d.c.h.Endpoints:participant=sandbox - Responding to client with HTTP 200 OK, context: {instance_uuid -> 'e9a2c5c6-8d8b-46df-a151-60eb2096b941', request_id -> '71d614d8-dd4b-4cbd-87e7-9f0c55d80ded'}
