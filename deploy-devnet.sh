@@ -1,24 +1,35 @@
 #!/usr/bin/env bash
 #
-# CantonLance — DevNet Deployment Script
+# GhostWork — Canton DevNet Deployment Script
 # Deploys Daml contracts to Canton DevNet and sets up party infrastructure
 #
 # This script runs from your local machine and connects to the DevNet server
 # via SSH. It uses the server's nginx proxy to reach the JSON Ledger API.
 #
 # Architecture:
-#   Local machine → SSH tunnel → DevNet server → nginx (port 8080)
+#   Local machine → SSH tunnel (port 9090) → DevNet server → nginx (port 80)
 #     → Host: json-ledger-api.localhost → participant:7575 (JSON Ledger API)
+#
+# What this script does (8 steps):
+#   1. Checks compiled DAR file exists (auto-builds if Docker container running)
+#   2. Verifies validator health on remote server via SSH
+#   3. Opens SSH tunnel: localhost:9090 → DevNet nginx:80
+#   4. Uploads DAR to Canton JSON Ledger API v2 (/v2/packages)
+#   5. Allocates 4 parties: Client, FreelancerA, FreelancerB, Auditor
+#   6. Creates users with ActAs/ReadAs rights for each party
+#   7. Generates HS256 JWT tokens (30-day expiry) and writes devnet-config.json
+#   8. Verifies deployment by querying active contracts per role
 #
 # Prerequisites:
 #   1. DevNet server running with validator stack (start.sh completed)
-#   2. SSH access to your DevNet server
+#   2. SSH access to your DevNet server (dev1-dev10 accounts)
 #   3. Built DAR file (.daml/dist/cantonlance-freelance-0.0.1.dar)
+#   4. `expect` installed (brew install expect on macOS)
 #
 # Usage:
 #   ./deploy-devnet.sh                              # Interactive mode
 #   ./deploy-devnet.sh 136.112.241.18 5             # DevNet5 as dev5
-#   TUNNEL_PORT=8090 ./deploy-devnet.sh 136.112.241.18 5  # Custom local port
+#   TUNNEL_PORT=9090 ./deploy-devnet.sh 136.112.241.18 5  # Custom local port
 
 set -euo pipefail
 

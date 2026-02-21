@@ -80,11 +80,13 @@ This forced me into the propose-accept pattern, which is actually a much better 
 
 What felt like a limitation turned out to be the right abstraction. Proposals show up in the freelancer's "Incoming Proposals" and they explicitly accept or decline. Much more honest than auto-enrolling someone in a contract.
 
-### 4. DevNet Sequencer Outage
+### 4. DevNet Sequencer Outage (Resolved)
 
-I had the app working on local sandbox and tried to deploy to Canton DevNet. Got the validator running, onboarded to the network, set up JWT auth. Everything looked good. Then the DevNet sequencers went down. The validator couldn't register the synchronizer domain, so no transactions could be submitted.
+I had the app working on local sandbox and tried to deploy to Canton DevNet. Got the validator running on DevNet5, onboarded to the network, set up JWT auth. Then the DevNet sequencers went down -- all three (Cumberland-1, Cumberland-2, Tradeweb-Markets-1) had expired TLS certificates. The validator couldn't register the synchronizer domain.
 
-I pivoted to making the local sandbox experience bulletproof instead. The app detects which environments are available on startup and lets you switch between them. The DevNet code path still exists and works. It's just waiting for the sequencers to come back.
+The fix required: (1) discovering the DevNet had upgraded from Splice 0.5.10 to 0.5.12, (2) finding that the migration ID changed from 0 to 1, (3) obtaining a fresh onboarding secret from the Digital Asset sponsor SV, and (4) re-deploying the entire validator stack with updated configuration. After the upgrade, the validator connected to the global synchronizer and our DAR uploaded successfully.
+
+The app now runs on **both** local sandbox and Canton DevNet simultaneously. The frontend auto-detects available environments and lets you hot-switch between them. Same Daml contracts, same API calls, different infrastructure -- proving the privacy model works on a real multi-node network.
 
 ### 5. Sandbox Auth: The Token Header That Wasn't
 

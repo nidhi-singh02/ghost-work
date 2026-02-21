@@ -237,7 +237,6 @@ const AccountSwitcher: React.FC = () => {
   // Preset parties first, then dynamic
   const presetOrder = ["client", "freelancerA", "freelancerB", "auditor"];
   const dynamicKeys = Object.keys(allParties).filter((k) => !presetOrder.includes(k));
-  const partyOrder = [...presetOrder, ...dynamicKeys];
 
   return (
     <div style={{ position: "relative" }}>

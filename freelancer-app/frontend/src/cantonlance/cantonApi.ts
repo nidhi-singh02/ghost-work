@@ -200,25 +200,6 @@ export class CantonDevNetClient {
   }
 
   /**
-   * Submit commands and wait for completion only (no transaction details needed).
-   */
-  private async submitAndWait(
-    party: string,
-    commands: Record<string, unknown>[],
-    opts: { workflowId: string; commandId: string; submissionId: string }
-  ): Promise<Record<string, unknown>> {
-    const body = {
-      commands: this.buildCommands(party, commands, opts),
-    };
-    return (await this.apiRequestRaw(
-      "POST",
-      "/v2/commands/submit-and-wait",
-      body,
-      party
-    )) as Record<string, unknown>;
-  }
-
-  /**
    * Get the current ledger end offset.
    */
   private async getLedgerEnd(party: string): Promise<number> {
@@ -512,13 +493,13 @@ export class CantonDevNetClient {
       submissionId: `reject-proposal-${Date.now()}`,
     };
 
-    const response = await this.submitAndWait(freelancerRole, cmds, opts);
+    const response = await this.submitForTransaction(freelancerRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: freelancerRole,
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
       requestBody: { commands: this.buildCommands(freelancerRole, cmds, opts) },
       responseBody: { ...response, note: "Proposal rejected and archived." },
       responseCount: 1,
@@ -676,13 +657,13 @@ export class CantonDevNetClient {
       submissionId: `cancel-${Date.now()}`,
     };
 
-    const response = await this.submitAndWait(clientRole, cmds, opts);
+    const response = await this.submitForTransaction(clientRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: clientRole,
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
       requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
       responseBody: { ...response, note: "Contract cancelled and archived." },
       responseCount: 1,
@@ -726,14 +707,14 @@ export class CantonDevNetClient {
       submissionId: `audit-${Date.now()}`,
     };
 
-    const response = await this.submitAndWait(clientRole, cmds, opts);
+    const response = await this.submitForTransaction(clientRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: clientRole,
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
-      requestBody: this.buildCommands(clientRole, cmds, opts),
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands(clientRole, cmds, opts) },
       responseBody: {
         ...response,
         distributedTo: [clientParty, auditorParty],
