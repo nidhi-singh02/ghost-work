@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { StoreProvider, useStore } from "./store";
-import PartySwitcher from "./PartySwitcher";
 import ClientView from "./ClientView";
 import FreelancerView from "./FreelancerView";
 import AuditorView from "./AuditorView";
@@ -9,7 +8,253 @@ import PrivacyComparisonPanel from "./PrivacyComparisonPanel";
 import ToastNotifications from "./ToastNotifications";
 import DemoGuide from "./DemoGuide";
 import { EnvironmentKey } from "./cantonApi";
-import { PARTIES } from "./types";
+import { PARTIES, PartyRole } from "./types";
+
+/* ── Global Styles ──────────────────────────────────────────────── */
+
+const GlobalStyles: React.FC = () => (
+  <style>{`
+    body {
+      background: #f9fafb !important;
+      color: #001e00 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif !important;
+    }
+    .gw-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s ease;
+    }
+    .gw-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .gw-card-static {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .gw-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .gw-avatar-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+    .gw-avatar-xs {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+    }
+    .gw-status-pill {
+      border-radius: 100px;
+      padding: 3px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gw-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #001e00;
+      line-height: 1.2;
+    }
+    .gw-stat-label {
+      font-size: 0.75rem;
+      color: #5e6d55;
+      font-weight: 500;
+    }
+    .gw-progress {
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      overflow: hidden;
+    }
+    .gw-progress-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    .gw-btn-primary {
+      background: #14A800;
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gw-btn-primary:hover { background: #118a00; }
+    .gw-btn-primary:disabled { background: #a3d99b; cursor: not-allowed; }
+    .gw-btn-outline {
+      background: transparent;
+      border: 2px solid #14A800;
+      color: #14A800;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 6px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gw-btn-outline:hover { background: #14A800; color: #fff; }
+    .gw-btn-secondary {
+      background: #f3f4f6;
+      border: 1px solid #e0e0e0;
+      color: #001e00;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gw-btn-secondary:hover { background: #e5e7eb; }
+    .gw-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #5e6d55;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .gw-navbar {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 0;
+    }
+    .gw-account-btn {
+      background: none;
+      border: 1px solid #e0e0e0;
+      border-radius: 100px;
+      padding: 4px 14px 4px 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 0.85rem;
+      color: #001e00;
+    }
+    .gw-account-btn:hover {
+      border-color: #14A800;
+      box-shadow: 0 0 0 2px rgba(20,168,0,0.1);
+    }
+    .gw-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      min-width: 260px;
+      z-index: 1060;
+      overflow: hidden;
+    }
+    .gw-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 0.85rem;
+      color: #001e00;
+    }
+    .gw-dropdown-item:hover { background: #f0fdf4; }
+    .gw-dropdown-item.active { background: #f0fdf4; }
+    @keyframes gw-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(20,168,0,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(20,168,0,0); }
+    }
+  `}</style>
+);
+
+/* ── Account Switcher ──────────────────────────────────────────── */
+
+const AccountSwitcher: React.FC = () => {
+  const { activeParty, setActiveParty } = useStore();
+  const [open, setOpen] = useState(false);
+  const party = PARTIES[activeParty];
+  const partyOrder: PartyRole[] = ["client", "freelancerA", "freelancerB", "auditor"];
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button className="gw-account-btn" onClick={() => setOpen(!open)} data-gw-id="accountSwitcher">
+        <div className="gw-avatar-sm" style={{ background: party.color }}>{party.avatar}</div>
+        <span style={{ fontWeight: 600 }}>{party.shortName}</span>
+        <span style={{ fontSize: "0.55rem", opacity: 0.4 }}>{open ? "\u25B2" : "\u25BC"}</span>
+      </button>
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 1059 }} onClick={() => setOpen(false)} />
+          <div className="gw-dropdown">
+            <div style={{ padding: "12px 16px 8px", borderBottom: "1px solid #e0e0e0" }}>
+              <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Switch Account
+              </span>
+            </div>
+            {partyOrder.map((role) => {
+              const p = PARTIES[role];
+              const isActive = role === activeParty;
+              return (
+                <button
+                  key={role}
+                  className={`gw-dropdown-item${isActive ? " active" : ""}`}
+                  onClick={() => { setActiveParty(role); setOpen(false); }}
+                  data-gw-id={`party-${role}`}
+                >
+                  <div className="gw-avatar-sm" style={{ background: p.color }}>{p.avatar}</div>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{p.shortName}</div>
+                    <div style={{ fontSize: "0.72rem", color: "#5e6d55" }}>{p.role}</div>
+                  </div>
+                  {isActive && <span style={{ marginLeft: "auto", color: "#14A800", fontWeight: 700 }}>&#x2713;</span>}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── Environment Selector ──────────────────────────────────────── */
 
 const EnvironmentSelector: React.FC = () => {
   const { environments, activeEnvironment, switchEnvironment, isConnected } = useStore();
@@ -24,49 +269,72 @@ const EnvironmentSelector: React.FC = () => {
 
   if (!hasBoth) {
     return (
-      <span className="badge bg-success" style={{ fontSize: "0.65rem", verticalAlign: "middle" }}>
+      <span style={{
+        fontSize: "0.65rem", fontWeight: 600, color: "#14A800",
+        background: "rgba(20,168,0,0.08)", borderRadius: "100px",
+        padding: "2px 10px", letterSpacing: "0.5px",
+      }}>
         {label}
       </span>
     );
   }
 
-  const handleSwitch = (env: EnvironmentKey) => {
-    switchEnvironment(env);
-    setOpen(false);
-  };
-
   return (
-    <div className="dropdown d-inline-block" style={{ position: "relative" }}>
+    <div style={{ position: "relative" }}>
       <button
-        className="btn btn-sm btn-outline-light dropdown-toggle py-0 px-2"
-        type="button"
         onClick={() => setOpen(!open)}
-        style={{ fontSize: "0.7rem" }}
+        style={{
+          background: "rgba(20,168,0,0.08)", border: "none", borderRadius: "100px",
+          padding: "2px 10px", fontSize: "0.65rem", fontWeight: 600,
+          color: "#14A800", cursor: "pointer", letterSpacing: "0.5px",
+        }}
       >
-        {label}
+        {label} {open ? "\u25B2" : "\u25BC"}
       </button>
       {open && (
-        <ul
-          className="dropdown-menu dropdown-menu-end show"
-          style={{ position: "absolute", right: 0, top: "100%", minWidth: "160px" }}
-        >
-          <li>
-            <button
-              className={`dropdown-item${activeEnvironment === "local" ? " active" : ""}`}
-              onClick={() => handleSwitch("local")}
-            >Local Sandbox</button>
-          </li>
-          <li>
-            <button
-              className={`dropdown-item${activeEnvironment === "devnet" ? " active" : ""}`}
-              onClick={() => handleSwitch("devnet")}
-            >Canton DevNet</button>
-          </li>
-        </ul>
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 1059 }} onClick={() => setOpen(false)} />
+          <div className="gw-dropdown" style={{ minWidth: "140px" }}>
+            <button className={`gw-dropdown-item${activeEnvironment === "local" ? " active" : ""}`} onClick={() => { switchEnvironment("local"); setOpen(false); }}>Sandbox</button>
+            <button className={`gw-dropdown-item${activeEnvironment === "devnet" ? " active" : ""}`} onClick={() => { switchEnvironment("devnet"); setOpen(false); }}>DevNet</button>
+          </div>
+        </>
       )}
     </div>
   );
 };
+
+/* ── Context Bar ───────────────────────────────────────────────── */
+
+const ContextBar: React.FC = () => {
+  const { activeParty, isConnected } = useStore();
+  if (!isConnected) return null;
+
+  const party = PARTIES[activeParty];
+  const descriptions: Record<PartyRole, string> = {
+    client: "You see all contracts and payments you've created",
+    freelancerA: "You only see your own contracts \u2014 other freelancers' data never reaches this node",
+    freelancerB: "You only see your own contracts \u2014 other freelancers' data never reaches this node",
+    auditor: "You see aggregate totals only \u2014 zero individual contracts, rates, or freelancer names",
+  };
+
+  return (
+    <div style={{
+      background: "#fff", borderBottom: "1px solid #e0e0e0",
+      borderLeft: `3px solid ${party.color}`,
+      padding: "8px 20px", display: "flex", alignItems: "center",
+      gap: "8px", fontSize: "0.8rem",
+    }}>
+      <span style={{ fontSize: "0.9rem" }}>&#x1F6E1;</span>
+      <span>
+        <strong style={{ color: party.color }}>{party.shortName}</strong>
+        <span style={{ color: "#5e6d55", marginLeft: "6px" }}>{descriptions[activeParty]}</span>
+      </span>
+    </div>
+  );
+};
+
+/* ── Hero Section ──────────────────────────────────────────────── */
 
 const HeroSection: React.FC = () => {
   const { visibleContracts, isConnected, demoStep, setDemoStep } = useStore();
@@ -74,146 +342,112 @@ const HeroSection: React.FC = () => {
 
   if (dismissed || visibleContracts.length > 0 || !isConnected) return null;
 
-  const features = [
-    {
-      icon: "\u{1F6E1}",
-      title: "Sub-Transaction Privacy",
-      text: "Nidhi never sees Akash's contract. The data never reaches their node.",
-    },
-    {
-      icon: "\u{1F50D}",
-      title: "Aggregate-Only Auditing",
-      text: "Auditor verifies totals without seeing individual rates or names.",
-    },
-    {
-      icon: "\u{1F512}",
-      title: "Protocol-Level Enforcement",
-      text: "Canton physically withholds unauthorized data. Not access control.",
-    },
-  ];
-
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-        color: "#fff",
-        padding: "2rem 1.5rem",
-        borderRadius: "0.5rem",
-        marginBottom: "1rem",
-        position: "relative",
-      }}
-    >
+    <div className="gw-card-static" style={{ padding: "32px", marginBottom: "20px", position: "relative" }}>
       <button
-        className="btn btn-sm btn-outline-light"
-        style={{ position: "absolute", top: "0.5rem", right: "0.5rem", opacity: 0.5, fontSize: "0.65rem", padding: "0.15rem 0.4rem" }}
         onClick={() => setDismissed(true)}
-      >
-        &#x2715;
-      </button>
-      <h2 style={{ fontSize: "1.6rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-        GhostWork
-      </h2>
-      <p style={{ fontSize: "0.95rem", opacity: 0.85, maxWidth: "600px", marginBottom: "1.2rem" }}>
-        Private freelancer payments on Canton L1. Every party sees{" "}
-        <strong>only their own data</strong> &mdash; enforced at the protocol level.
+        style={{
+          position: "absolute", top: "12px", right: "12px",
+          background: "none", border: "none", color: "#5e6d55",
+          cursor: "pointer", fontSize: "1rem", padding: "4px",
+        }}
+      >&#x2715;</button>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+        <span style={{ fontSize: "1.5rem" }}>&#x1F6E1;</span>
+        <h2 style={{ fontSize: "1.4rem", fontWeight: 700, margin: 0, color: "#001e00" }}>
+          The Private Freelancer Platform
+        </h2>
+      </div>
+      <p style={{ fontSize: "0.9rem", color: "#5e6d55", lineHeight: 1.6, margin: "0 0 16px", maxWidth: "600px" }}>
+        Hire freelancers with <strong style={{ color: "#001e00" }}>protocol-level privacy</strong>. Each party sees only their own data &mdash;
+        enforced by Canton, not access control.
       </p>
-      <div className="row g-2" style={{ maxWidth: "720px" }}>
-        {features.map((f) => (
-          <div className="col-md-4" key={f.title}>
-            <div
-              style={{
-                backgroundColor: "rgba(255,255,255,0.07)",
-                borderRadius: "0.4rem",
-                padding: "0.75rem",
-                height: "100%",
-              }}
-            >
-              <div style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}>{f.icon}</div>
-              <div style={{ fontWeight: 600, fontSize: "0.78rem", marginBottom: "0.15rem" }}>
-                {f.title}
-              </div>
-              <div style={{ fontSize: "0.72rem", opacity: 0.75 }}>{f.text}</div>
-            </div>
-          </div>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
+        {[
+          { icon: "\u{1F512}", label: "Sub-Transaction Privacy" },
+          { icon: "\u{1F50D}", label: "Aggregate-Only Auditing" },
+          { icon: "\u{1F6E1}", label: "Protocol-Level Enforcement" },
+        ].map((f) => (
+          <span key={f.label} style={{
+            background: "#f0fdf4", border: "1px solid #d1fae5",
+            borderRadius: "100px", padding: "6px 14px",
+            fontSize: "0.78rem", fontWeight: 500, color: "#065f46",
+            display: "inline-flex", alignItems: "center", gap: "6px",
+          }}>
+            {f.icon} {f.label}
+          </span>
         ))}
       </div>
       {demoStep === null && (
-        <button
-          className="btn btn-primary btn-sm mt-3"
-          style={{ fontSize: "0.8rem" }}
-          onClick={() => setDemoStep(0)}
-        >
-          Start Guided Demo
+        <button className="gw-btn-outline" onClick={() => setDemoStep(0)}>
+          Start Guided Demo &rarr;
         </button>
       )}
     </div>
   );
 };
 
+/* ── App Content ───────────────────────────────────────────────── */
+
 const AppContent: React.FC = () => {
   const { activeParty, isLoading, isConnected } = useStore();
 
-  const partyColor = PARTIES[activeParty].color;
-
   return (
     <div>
+      <GlobalStyles />
       <ToastNotifications />
-      <nav
-        className="navbar navbar-dark py-2"
-        style={{
-          backgroundColor: partyColor,
-          transition: "background-color 0.4s ease",
-        }}
-      >
-        <div className="container">
-          <span className="navbar-brand fw-bold" style={{ fontSize: "1.1rem" }}>
-            GhostWork
-          </span>
-          <span className="navbar-text text-light d-flex align-items-center gap-2" style={{ fontSize: "0.8rem" }}>
-            Private Freelancer Payment Protocol
+
+      <nav className="gw-navbar">
+        <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "1.3rem" }}>&#x1F6E1;</span>
+            <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "#001e00" }}>GhostWork</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {isConnected && <EnvironmentSelector />}
-          </span>
+            {isConnected && <AccountSwitcher />}
+          </div>
         </div>
       </nav>
 
-      <div className="container" style={{ paddingTop: "1rem" }}>
+      <ContextBar />
+
+      <div className="container" style={{ paddingTop: "20px", paddingBottom: "80px" }}>
         <HeroSection />
-        <PartySwitcher />
 
         {isLoading && (
-          <div className="text-center py-1">
-            <div className="spinner-border spinner-border-sm text-primary" role="status" />
-            <small className="ms-2 text-muted">Syncing...</small>
+          <div style={{ textAlign: "center", padding: "12px 0" }}>
+            <div className="spinner-border spinner-border-sm" role="status" style={{ color: "#14A800" }} />
+            <small style={{ marginLeft: "8px", color: "#5e6d55" }}>Syncing with Canton...</small>
           </div>
         )}
 
-        <div className="mt-2">
+        <div>
           {activeParty === "client" && <ClientView />}
-          {(activeParty === "freelancerA" ||
-            activeParty === "freelancerB") && <FreelancerView />}
+          {(activeParty === "freelancerA" || activeParty === "freelancerB") && <FreelancerView />}
           {activeParty === "auditor" && <AuditorView />}
         </div>
 
         <PrivacyComparisonPanel />
         <ApiProofPanel />
 
-        <footer className="mt-4 mb-3 text-center text-muted" style={{ paddingBottom: "4rem" }}>
-          <small style={{ fontSize: "0.75rem" }}>
-            Built on Canton L1 &mdash; Sub-transaction privacy. ETHDenver 2026.
+        <footer style={{ marginTop: "40px", textAlign: "center", paddingBottom: "60px" }}>
+          <small style={{ fontSize: "0.75rem", color: "#5e6d55" }}>
+            Built on Canton L1 &mdash; Sub-transaction privacy &mdash; ETHDenver 2026
           </small>
         </footer>
       </div>
+
       <DemoGuide />
     </div>
   );
 };
 
-const GhostWorkApp: React.FC = () => {
-  return (
-    <StoreProvider>
-      <AppContent />
-    </StoreProvider>
-  );
-};
+const GhostWorkApp: React.FC = () => (
+  <StoreProvider>
+    <AppContent />
+  </StoreProvider>
+);
 
 export default GhostWorkApp;

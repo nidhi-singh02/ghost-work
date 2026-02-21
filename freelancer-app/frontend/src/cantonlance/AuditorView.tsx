@@ -1,91 +1,84 @@
 import React from "react";
 import { useStore } from "./store";
-import { PARTIES } from "./types";
 
 const AuditorView: React.FC = () => {
-  const { visibleContracts, visiblePayments, visibleAuditSummaries } =
-    useStore();
+  const { visibleContracts, visiblePayments, visibleAuditSummaries } = useStore();
 
   return (
     <div>
-      <div className="d-flex align-items-center gap-2 mb-3">
-        <h5 className="mb-0" style={{ color: PARTIES.auditor.color }}>Eve (Auditor)</h5>
-        <small className="text-muted">Sees aggregate totals only &mdash; zero individual contracts or payments</small>
+      {/* ── Privacy Metrics ────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}>
+        <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #dc3545" }}>
+          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F512;</div>
+          <div className="gw-stat-label">Contracts Visible</div>
+          <div className="gw-stat-value">{visibleContracts.length}</div>
+          <div style={{ fontSize: "0.7rem", color: "#dc3545", fontWeight: 500 }}>Privacy enforced: always 0</div>
+        </div>
+        <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #dc3545" }}>
+          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F512;</div>
+          <div className="gw-stat-label">Payments Visible</div>
+          <div className="gw-stat-value">{visiblePayments.length}</div>
+          <div style={{ fontSize: "0.7rem", color: "#dc3545", fontWeight: 500 }}>Privacy enforced: always 0</div>
+        </div>
+        <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #14A800" }}>
+          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F6E1;</div>
+          <div className="gw-stat-label">Audit Summaries</div>
+          <div className="gw-stat-value">{visibleAuditSummaries.length}</div>
+          <div style={{ fontSize: "0.7rem", color: "#14A800", fontWeight: 500 }}>Aggregated data only</div>
+        </div>
       </div>
 
-      <div className="row mb-3 g-2">
-        <div className="col-md-4">
-          <div className="card border-danger" style={{ borderWidth: "1px" }}>
-            <div className="card-body text-center py-2">
-              <small className="text-muted d-block">Contracts Visible</small>
-              <h4 className="mb-0">{visibleContracts.length}</h4>
-              <small className="text-danger" style={{ fontSize: "0.7rem" }}>
-                Privacy enforced: always 0
-              </small>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card border-danger" style={{ borderWidth: "1px" }}>
-            <div className="card-body text-center py-2">
-              <small className="text-muted d-block">Payments Visible</small>
-              <h4 className="mb-0">{visiblePayments.length}</h4>
-              <small className="text-danger" style={{ fontSize: "0.7rem" }}>
-                Privacy enforced: always 0
-              </small>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card border-success" style={{ borderWidth: "1px" }}>
-            <div className="card-body text-center py-2">
-              <small className="text-muted d-block">Audit Summaries</small>
-              <h4 className="mb-0">{visibleAuditSummaries.length}</h4>
-              <small className="text-success" style={{ fontSize: "0.7rem" }}>
-                Aggregated data only
-              </small>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ── Audit Summaries ────────────────────────────────── */}
+      <div className="gw-section-title">Audit Reports</div>
 
       {visibleAuditSummaries.length === 0 ? (
-        <div className="card" style={{ borderStyle: "dashed", borderColor: PARTIES.auditor.color }}>
-          <div className="card-body text-center py-3">
-            <div style={{ fontSize: "2rem", opacity: 0.2 }}>&#x1F6E1;</div>
-            <h6 className="mt-1">No Audit Summaries Yet</h6>
-            <small className="text-muted">
-              Switch to <strong>Eth Foundation</strong> and click &quot;Generate Audit Summary&quot;
-              to create an aggregate report.
-            </small>
-          </div>
+        <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed", borderColor: "#dc3545" }}>
+          <div style={{ fontSize: "2rem", opacity: 0.15, marginBottom: "8px" }}>&#x1F6E1;</div>
+          <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Audit Summaries Yet</h6>
+          <p style={{ fontSize: "0.82rem", color: "#5e6d55", margin: "0 0 8px" }}>
+            This node has received zero individual contracts or payments.
+          </p>
+          <p style={{ fontSize: "0.78rem", color: "#5e6d55", margin: 0 }}>
+            Switch to <strong>Eth Foundation</strong> from the account menu and click &quot;Generate Audit&quot;.
+          </p>
         </div>
       ) : (
-        visibleAuditSummaries.map((a) => (
-          <div className="card mb-2" key={a.contractId}>
-            <div className="card-body py-2">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="mb-0">
-                  Audit Report &mdash; {a.reportPeriod}
-                </h6>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <small className="text-muted d-block">Total Contracts</small>
-                  <strong>{a.totalContractsCount}</strong>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {visibleAuditSummaries.map((a) => (
+            <div key={a.contractId} className="gw-card" style={{ padding: "20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#001e00" }}>
+                    Audit Report &mdash; {a.reportPeriod}
+                  </div>
                 </div>
-                <div className="col-md-6">
-                  <small className="text-muted d-block">Total Amount Paid</small>
-                  <strong>${a.totalAmountPaid.toLocaleString()}</strong>
+                <span className="gw-status-pill" style={{ background: "#ecfdf5", color: "#065f46" }}>
+                  &#x2713; Verified
+                </span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div>
+                  <div className="gw-stat-label">Total Contracts</div>
+                  <div className="gw-stat-value">{a.totalContractsCount}</div>
+                </div>
+                <div>
+                  <div className="gw-stat-label">Total Amount Paid</div>
+                  <div className="gw-stat-value">${a.totalAmountPaid.toLocaleString()}</div>
                 </div>
               </div>
-              <small className="text-muted d-block mt-2" style={{ fontSize: "0.72rem" }}>
-                Auditor sees totals only &mdash; zero individual rates, project details, or freelancer names.
-              </small>
+              <div style={{ marginTop: "12px", fontSize: "0.75rem", color: "#5e6d55", borderTop: "1px solid #f0f0f0", paddingTop: "8px" }}>
+                &#x1F6E1; Aggregate only &mdash; zero individual rates, descriptions, or freelancer names visible.
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
+
+      {/* ── Privacy Badge ──────────────────────────────────── */}
+      <div style={{ marginTop: "24px", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#5e6d55" }}>
+        <span>&#x1F512;</span>
+        <span>Canton&apos;s sub-transaction privacy ensures this node never receives individual contract data</span>
+      </div>
     </div>
   );
 };

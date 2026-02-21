@@ -12,38 +12,54 @@ const ApiProofPanel: React.FC = () => {
   const envLabel = activeEnvironment === "local" ? "Local Sandbox" : "DevNet";
 
   return (
-    <div className="mt-3">
+    <div style={{ marginTop: "12px" }}>
       <div
-        className="d-flex align-items-center gap-2 py-2 px-3 rounded-top"
         style={{
-          backgroundColor: "#f8f9fa",
-          border: "1px solid #dee2e6",
-          borderBottom: open ? "none" : "1px solid #dee2e6",
-          borderRadius: open ? "0.375rem 0.375rem 0 0" : "0.375rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "12px 16px",
+          backgroundColor: "#fff",
+          border: "1px solid #e0e0e0",
+          borderBottom: open ? "none" : "1px solid #e0e0e0",
+          borderRadius: open ? "12px 12px 0 0" : "12px",
           cursor: "pointer",
+          transition: "background 0.15s",
         }}
         onClick={() => setOpen(!open)}
       >
-        <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+        <span style={{ fontSize: "1rem" }}>&#x1F4E1;</span>
+        <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#001e00" }}>
           Canton API Log
         </span>
-        <span className="badge bg-secondary" style={{ fontSize: "0.65rem" }}>
+        <span
+          style={{
+            backgroundColor: "#14A800",
+            color: "#fff",
+            borderRadius: "100px",
+            padding: "1px 8px",
+            fontSize: "0.65rem",
+            fontWeight: 600,
+          }}
+        >
           {apiCalls.length}
         </span>
-        <small className="text-muted">
+        <span style={{ fontSize: "0.75rem", color: "#5e6d55" }}>
           Real JSON Ledger API v2 &middot; {envLabel}
-        </small>
-        <span className="ms-auto" style={{ fontSize: "0.75rem" }}>
+        </span>
+        <span style={{ marginLeft: "auto", fontSize: "0.75rem", color: "#5e6d55" }}>
           {open ? "\u25B2" : "\u25BC"}
         </span>
       </div>
       {open && (
         <div
-          className="border rounded-bottom"
           style={{
+            border: "1px solid #e0e0e0",
             borderTop: "none",
+            borderRadius: "0 0 12px 12px",
             maxHeight: "400px",
             overflowY: "auto",
+            backgroundColor: "#fff",
           }}
         >
           {apiCalls.map((call, i) => {
@@ -52,60 +68,78 @@ const ApiProofPanel: React.FC = () => {
             return (
               <div
                 key={i}
-                className="border-bottom"
-                style={{ fontSize: "0.8rem" }}
+                style={{
+                  borderBottom: "1px solid #f0f0f0",
+                  fontSize: "0.8rem",
+                }}
               >
                 <div
-                  className="d-flex align-items-center gap-2 px-3 py-2"
-                  style={{ cursor: "pointer", backgroundColor: isExpanded ? "#f8f9fa" : "transparent" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "10px 16px",
+                    cursor: "pointer",
+                    backgroundColor: isExpanded ? "#f9fafb" : "transparent",
+                    transition: "background 0.15s",
+                  }}
                   onClick={() => setExpanded(isExpanded ? null : i)}
                 >
-                  <span
-                    className="badge"
-                    style={{
-                      backgroundColor: party.color,
-                      minWidth: "70px",
-                      fontWeight: 400,
-                      fontSize: "0.7rem",
-                    }}
+                  <div
+                    className="gw-avatar-xs"
+                    style={{ backgroundColor: party.color, flexShrink: 0 }}
                   >
-                    {party.displayName.split(" (")[0]}
+                    {party.avatar}
+                  </div>
+                  <code style={{ color: "#14A800", fontSize: "0.72rem", fontWeight: 600 }}>
+                    {call.method}
+                  </code>
+                  <code style={{ color: "#5e6d55", fontSize: "0.72rem" }}>
+                    {call.endpoint}
+                  </code>
+                  <span style={{ marginLeft: "auto", color: "#5e6d55", fontSize: "0.72rem" }}>
+                    {call.description}
                   </span>
-                  <code className="text-primary" style={{ fontSize: "0.72rem" }}>{call.method}</code>
-                  <code className="text-muted" style={{ fontSize: "0.72rem" }}>{call.endpoint}</code>
-                  <span className="ms-auto text-muted">
-                    <small>{call.description}</small>
+                  <span style={{ fontSize: "0.7rem", color: "#5e6d55" }}>
+                    {isExpanded ? "\u25B2" : "\u25BC"}
                   </span>
-                  <span className="ms-1">{isExpanded ? "\u25B2" : "\u25BC"}</span>
                 </div>
                 {isExpanded && (
-                  <div className="px-3 pb-3">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <small className="text-muted d-block mb-1 fw-bold">
-                          Request:
-                        </small>
+                  <div style={{ padding: "0 16px 14px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", marginBottom: "6px" }}>
+                          Request
+                        </div>
                         <pre
-                          className="bg-dark text-light p-2 rounded mb-0"
                           style={{
-                            fontSize: "0.7rem",
+                            backgroundColor: "#1a1a2e",
+                            color: "#e0e0e0",
+                            padding: "10px 12px",
+                            borderRadius: "8px",
+                            fontSize: "0.68rem",
                             maxHeight: "200px",
                             overflowY: "auto",
+                            margin: 0,
                           }}
                         >
                           {JSON.stringify(call.requestBody, null, 2)}
                         </pre>
                       </div>
-                      <div className="col-md-6">
-                        <small className="text-muted d-block mb-1 fw-bold">
-                          Response:
-                        </small>
+                      <div>
+                        <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "#5e6d55", marginBottom: "6px" }}>
+                          Response
+                        </div>
                         <pre
-                          className="bg-dark text-success p-2 rounded mb-0"
                           style={{
-                            fontSize: "0.7rem",
+                            backgroundColor: "#1a1a2e",
+                            color: "#14A800",
+                            padding: "10px 12px",
+                            borderRadius: "8px",
+                            fontSize: "0.68rem",
                             maxHeight: "200px",
                             overflowY: "auto",
+                            margin: 0,
                           }}
                         >
                           {JSON.stringify(call.responseBody, null, 2)}

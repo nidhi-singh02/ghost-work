@@ -4,26 +4,26 @@
   "packageId": "9eefe6471db344898fe1e187ac0330e733b0c44762efd3f118de02b7ce354831",
   "parties": {
     "client": {
-      "partyId": "Client_EthFoundation::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
+      "partyId": "Client_EthFoundation::1220edaa5e1545e8ef4609d258212df517fd17f3b36fe49e1c39e6bc78b03b6d9801",
       "userId": "client_user",
       "token": ""
     },
     "freelancerA": {
-      "partyId": "FreelancerA_Nidhi::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
+      "partyId": "FreelancerA_Nidhi::1220edaa5e1545e8ef4609d258212df517fd17f3b36fe49e1c39e6bc78b03b6d9801",
       "userId": "freelancerA_user",
       "token": ""
     },
     "freelancerB": {
-      "partyId": "FreelancerB_Akash::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
+      "partyId": "FreelancerB_Akash::1220edaa5e1545e8ef4609d258212df517fd17f3b36fe49e1c39e6bc78b03b6d9801",
       "userId": "freelancerB_user",
       "token": ""
     },
     "auditor": {
-      "partyId": "Auditor_Eve::1220732d70f9b1ea18987399fcb8ff0f79ff2919d8f4640479d7367584c9a714367e",
+      "partyId": "Auditor_Eve::1220edaa5e1545e8ef4609d258212df517fd17f3b36fe49e1c39e6bc78b03b6d9801",
       "userId": "auditor_user",
       "token": ""
     }
   },
   "darPackageId": "cantonlance-freelance",
-  "deployedAt": "2026-02-21T04:19:11Z"
+  "deployedAt": "2026-02-21T04:55:52Z"
 }

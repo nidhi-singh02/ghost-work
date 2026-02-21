@@ -9,37 +9,37 @@ const DEMO_STEPS = [
   },
   {
     title: "Step 1: Create a Contract",
-    text: "You're viewing as the Ethereum Foundation (Client). Click \"+\u00a0New\u00a0Contract\" to hire Nidhi. Fill in a project description, rate, budget, and milestones.",
+    text: "You're viewing as the Ethereum Foundation (Client). Use the \"+ New Contract\" form to hire Nidhi. Fill in a project description, rate, budget, and milestones.",
     action: "Create a contract, then click Next.",
     highlight: "createContract",
   },
   {
     title: "Step 2: Switch to Nidhi",
-    text: "Click \"Nidhi (Freelancer)\" in the party switcher. Notice she can ONLY see her own contract \u2014 the navbar changes color to show you're viewing a different participant node.",
+    text: "Open the account menu in the top-right corner of the navbar and select \"Nidhi\". Notice she can ONLY see her own contract \u2014 the context bar updates to show you're viewing a different participant node.",
     action: "Switch to Nidhi, then click Next.",
     highlight: "partyAlice",
   },
   {
     title: "Step 3: Submit a Milestone",
-    text: "As Nidhi, click \"Submit Milestone 1\" to mark progress on the contract. The Ethereum Foundation will need to approve and pay for this milestone.",
+    text: "As Nidhi, click \"Submit Milestone 1 \u2192\" to mark progress on the contract. The Ethereum Foundation will need to approve and pay for this milestone.",
     action: "Submit a milestone, then click Next.",
     highlight: "submitMilestone",
   },
   {
     title: "Step 4: Check Akash's View",
-    text: "Switch to \"Akash (Freelancer)\". He sees ZERO contracts. Nidhi's data was never sent to Akash's participant node \u2014 it's not filtered, it's physically absent.",
+    text: "Open the account menu and switch to \"Akash\". He sees ZERO contracts. Nidhi's data was never sent to Akash's participant node \u2014 it's not filtered, it's physically absent.",
     action: "Switch to Akash, then click Next.",
     highlight: "partyBob",
   },
   {
     title: "Step 5: Check the Auditor",
-    text: "Switch to \"Eve (Auditor)\". She sees zero individual contracts and zero payments. The auditor's node has never received this data.",
+    text: "Open the account menu and switch to \"Eve\". She sees zero individual contracts and zero payments. The auditor's node has never received this data.",
     action: "Switch to Eve, then click Next.",
     highlight: "partyAuditor",
   },
   {
     title: "Step 6: Generate Audit Summary",
-    text: "Switch back to the Client. Click \"Approve & Pay\" to pay for the milestone, then click \"Generate Audit Summary\". This creates an aggregate-only report visible to the auditor.",
+    text: "Switch back to the Client via the account menu. Click \"Approve & Pay\" to pay for the milestone, then click \"Generate Audit Summary\". This creates an aggregate-only report visible to the auditor.",
     action: "Approve the milestone, generate the audit, then click Next.",
     highlight: "generateAudit",
   },
@@ -60,15 +60,16 @@ const DemoGuide: React.FC = () => {
 
   const isFirst = demoStep === 0;
   const isLast = demoStep === DEMO_STEPS.length - 1;
+  const progress = ((demoStep + 1) / DEMO_STEPS.length) * 100;
 
   return (
     <>
       <style>{`
-        @keyframes cl-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.5); }
-          50% { box-shadow: 0 0 0 8px rgba(13, 110, 253, 0); }
+        @keyframes gw-demo-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(20, 168, 0, 0.4); }
+          50% { box-shadow: 0 0 0 8px rgba(20, 168, 0, 0); }
         }
-        .cl-highlight { animation: cl-pulse 1.5s ease-in-out infinite; }
+        .gw-demo-highlight { animation: gw-demo-pulse 1.5s ease-in-out infinite; }
       `}</style>
       <div
         style={{
@@ -77,46 +78,62 @@ const DemoGuide: React.FC = () => {
           left: 0,
           right: 0,
           zIndex: 1070,
-          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
-          color: "#fff",
-          padding: "1rem 1.5rem",
-          borderTop: "3px solid #0d6efd",
-          boxShadow: "0 -4px 20px rgba(0,0,0,0.3)",
+          background: "#fff",
+          borderTop: "2px solid #14A800",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.1)",
         }}
       >
-        <div className="container d-flex align-items-center gap-3">
+        {/* Progress bar */}
+        <div style={{ height: "3px", backgroundColor: "#f0f0f0" }}>
           <div
             style={{
-              backgroundColor: "#0d6efd",
+              height: "100%",
+              width: `${progress}%`,
+              backgroundColor: "#14A800",
+              transition: "width 0.3s ease",
+            }}
+          />
+        </div>
+
+        <div style={{ maxWidth: "960px", margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Step counter */}
+          <div
+            style={{
+              backgroundColor: "#14A800",
               color: "#fff",
               borderRadius: "50%",
-              width: "36px",
-              height: "36px",
+              width: "40px",
+              height: "40px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontWeight: 700,
-              fontSize: "0.85rem",
+              fontSize: "0.8rem",
               flexShrink: 0,
             }}
           >
             {demoStep + 1}/{DEMO_STEPS.length}
           </div>
+
+          {/* Content */}
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.2rem" }}>
+            <div style={{ fontWeight: 600, fontSize: "0.92rem", color: "#001e00", marginBottom: "3px" }}>
               {step.title}
             </div>
-            <div style={{ fontSize: "0.85rem", opacity: 0.9 }}>
+            <div style={{ fontSize: "0.82rem", color: "#001e00", lineHeight: 1.4 }}>
               {step.text}
             </div>
-            <div style={{ fontSize: "0.8rem", opacity: 0.65, marginTop: "0.15rem" }}>
+            <div style={{ fontSize: "0.75rem", color: "#5e6d55", marginTop: "4px" }}>
               {step.action}
             </div>
           </div>
-          <div className="d-flex gap-2" style={{ flexShrink: 0 }}>
+
+          {/* Navigation */}
+          <div style={{ display: "flex", gap: "8px", flexShrink: 0, alignItems: "center" }}>
             {!isFirst && (
               <button
-                className="btn btn-outline-light btn-sm"
+                className="gw-btn-outline"
+                style={{ padding: "6px 14px", fontSize: "0.8rem" }}
                 onClick={() => setDemoStep(demoStep - 1)}
               >
                 Back
@@ -124,22 +141,30 @@ const DemoGuide: React.FC = () => {
             )}
             {!isLast ? (
               <button
-                className="btn btn-primary btn-sm"
+                className="gw-btn-primary"
+                style={{ padding: "6px 16px", fontSize: "0.8rem" }}
                 onClick={() => setDemoStep(demoStep + 1)}
               >
                 Next
               </button>
             ) : (
               <button
-                className="btn btn-success btn-sm"
+                className="gw-btn-primary"
+                style={{ padding: "6px 16px", fontSize: "0.8rem" }}
                 onClick={() => setDemoStep(null)}
               >
                 Finish
               </button>
             )}
             <button
-              className="btn btn-sm"
-              style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem" }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#5e6d55",
+                fontSize: "0.72rem",
+                cursor: "pointer",
+                padding: "4px 8px",
+              }}
               onClick={() => setDemoStep(null)}
             >
               End
