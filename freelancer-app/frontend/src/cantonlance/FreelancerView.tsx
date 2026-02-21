@@ -1,6 +1,6 @@
 import React from "react";
 import { useStore } from "./store";
-import { PARTIES } from "./types";
+import { PARTIES, formatPartyName } from "./types";
 
 const FreelancerView: React.FC = () => {
   const { activeParty, visibleContracts, visiblePayments, submitMilestone, loadingAction } =
@@ -10,34 +10,25 @@ const FreelancerView: React.FC = () => {
 
   return (
     <div>
-      <h4 style={{ color: partyInfo.color }}>{partyInfo.displayName} Dashboard</h4>
-      <div className="alert alert-info py-2">
-        <small>
-          This view shows <strong>only</strong> contracts where{" "}
-          {partyInfo.displayName} is the freelancer. Canton&apos;s sub-transaction
-          privacy ensures this party&apos;s participant node never receives data
-          about other freelancers&apos; contracts.
-        </small>
+      <div className="d-flex align-items-center gap-2 mb-3">
+        <h5 className="mb-0" style={{ color: partyInfo.color }}>{partyInfo.displayName.split(" (")[0]}</h5>
+        <small className="text-muted">Only sees own contracts &mdash; other freelancers&apos; data never reaches this node</small>
       </div>
 
-      <h5>
+      <h6>
         My Contracts{" "}
-        <span className="badge" style={{ backgroundColor: partyInfo.color }}>
+        <span className="badge" style={{ backgroundColor: partyInfo.color, fontSize: "0.7rem" }}>
           {visibleContracts.length}
         </span>
-      </h5>
+      </h6>
       {visibleContracts.length === 0 ? (
         <div className="card" style={{ borderStyle: "dashed", borderColor: partyInfo.color }}>
-          <div className="card-body text-center py-4">
-            <div style={{ fontSize: "2.5rem", opacity: 0.2 }}>&#x1F512;</div>
-            <h5 className="mt-2">No Contracts Visible</h5>
-            <p className="text-muted mb-2">
-              Canton&apos;s privacy means this participant node has received{" "}
-              <strong>zero</strong> contracts for {partyInfo.displayName}.
-            </p>
+          <div className="card-body text-center py-3">
+            <div style={{ fontSize: "1.8rem", opacity: 0.2 }}>&#x1F512;</div>
+            <h6 className="mt-1">No Contracts Visible</h6>
             <small className="text-muted">
-              This is not access control &mdash; the data was never sent to this node.
-              Switch to <strong>Client</strong> to create a contract.
+              Zero contracts on this node &mdash; data was never sent, not hidden.
+              Switch to <strong>Eth Foundation</strong> to create a contract.
             </small>
           </div>
         </div>
@@ -49,7 +40,7 @@ const FreelancerView: React.FC = () => {
                 <div>
                   <h6 className="card-title mb-1">{c.description}</h6>
                   <p className="text-muted mb-1">
-                    Client: {c.client}
+                    Client: {formatPartyName(c.client)}
                   </p>
                 </div>
                 <span
@@ -110,12 +101,12 @@ const FreelancerView: React.FC = () => {
         ))
       )}
 
-      <h5 className="mt-4">
+      <h6 className="mt-3">
         My Payments{" "}
-        <span className="badge" style={{ backgroundColor: partyInfo.color }}>
+        <span className="badge" style={{ backgroundColor: partyInfo.color, fontSize: "0.7rem" }}>
           {visiblePayments.length}
         </span>
-      </h5>
+      </h6>
       {visiblePayments.length === 0 ? (
         <p className="text-muted">No payments received yet.</p>
       ) : (

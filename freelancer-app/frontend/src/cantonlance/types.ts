@@ -65,3 +65,16 @@ export const PARTIES: Record<PartyRole, Party> = {
     color: "#dc3545",
   },
 };
+
+/** Maps a raw Canton party ID (e.g. "FreelancerA_Nidhi::1220abcd...") to a short display name */
+export function formatPartyName(raw: string): string {
+  const partyList = Object.values(PARTIES);
+  for (const p of partyList) {
+    if (raw.startsWith(p.name)) {
+      return p.displayName.split(" (")[0]; // "Nidhi", "Akash", "Ethereum Foundation", "Eve"
+    }
+  }
+  // Fallback: strip the ::hash suffix
+  const idx = raw.indexOf("::");
+  return idx > 0 ? raw.substring(0, idx) : raw;
+}

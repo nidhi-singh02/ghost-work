@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useStore } from "./store";
+import { formatPartyName } from "./types";
 
 const ClientView: React.FC = () => {
   const {
@@ -42,8 +43,8 @@ const ClientView: React.FC = () => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 className="mb-0">Client Dashboard</h4>
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <h5 className="mb-0" style={{ color: "#0d6efd" }}>Ethereum Foundation</h5>
         <div className="d-flex gap-2">
           <button
             className="btn btn-primary btn-sm"
@@ -176,10 +177,10 @@ const ClientView: React.FC = () => {
         </div>
       )}
 
-      <h5>
+      <h6>
         Contracts{" "}
-        <span className="badge bg-primary">{visibleContracts.length}</span>
-      </h5>
+        <span className="badge bg-primary" style={{ fontSize: "0.7rem" }}>{visibleContracts.length}</span>
+      </h6>
       {visibleContracts.length === 0 ? (
         <div className="card" style={{ borderStyle: "dashed" }}>
           <div className="card-body text-center py-4">
@@ -211,7 +212,7 @@ const ClientView: React.FC = () => {
             <tbody>
               {visibleContracts.map((c) => (
                 <tr key={c.contractId}>
-                  <td>{c.freelancer}</td>
+                  <td>{formatPartyName(c.freelancer)}</td>
                   <td>{c.description}</td>
                   <td>${c.hourlyRate}/hr</td>
                   <td>${c.totalBudget.toLocaleString()}</td>
@@ -253,10 +254,10 @@ const ClientView: React.FC = () => {
         </div>
       )}
 
-      <h5 className="mt-4">
+      <h6 className="mt-3">
         Payments{" "}
-        <span className="badge bg-primary">{visiblePayments.length}</span>
-      </h5>
+        <span className="badge bg-primary" style={{ fontSize: "0.7rem" }}>{visiblePayments.length}</span>
+      </h6>
       {visiblePayments.length === 0 ? (
         <p className="text-muted">No payments recorded yet.</p>
       ) : (
@@ -274,7 +275,7 @@ const ClientView: React.FC = () => {
             <tbody>
               {visiblePayments.map((p) => (
                 <tr key={p.contractId}>
-                  <td>{p.freelancer}</td>
+                  <td>{formatPartyName(p.freelancer)}</td>
                   <td>{p.projectDescription}</td>
                   <td>{p.milestoneNumber}</td>
                   <td>${p.amount.toLocaleString()}</td>
@@ -290,12 +291,12 @@ const ClientView: React.FC = () => {
 
       {visibleAuditSummaries.length > 0 && (
         <>
-          <h5 className="mt-4">
+          <h6 className="mt-3">
             Audit Summaries{" "}
-            <span className="badge bg-danger">
+            <span className="badge bg-danger" style={{ fontSize: "0.7rem" }}>
               {visibleAuditSummaries.length}
             </span>
-          </h5>
+          </h6>
           <div className="table-responsive">
             <table className="table table-hover table-sm">
               <thead className="table-light">

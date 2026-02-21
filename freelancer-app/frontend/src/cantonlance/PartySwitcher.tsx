@@ -7,11 +7,13 @@ const PartySwitcher: React.FC = () => {
 
   const partyOrder: PartyRole[] = ["client", "freelancerA", "freelancerB", "auditor"];
 
+  const total = visibleContracts.length + visiblePayments.length + visibleAuditSummaries.length;
+
   return (
-    <div className="mb-4">
-      <div className="d-flex align-items-center gap-2 mb-2">
-        <strong>View as:</strong>
-        <div className="btn-group" role="group">
+    <div className="mb-3">
+      <div className="d-flex align-items-center gap-2 flex-wrap">
+        <small className="text-muted fw-bold">View as:</small>
+        <div className="btn-group btn-group-sm" role="group">
           {partyOrder.map((role) => {
             const party = PARTIES[role];
             const isActive = activeParty === role;
@@ -20,34 +22,20 @@ const PartySwitcher: React.FC = () => {
                 key={role}
                 type="button"
                 className={`btn ${isActive ? "text-white" : "btn-outline-secondary"}`}
-                style={isActive ? { backgroundColor: party.color, borderColor: party.color } : {}}
+                style={{
+                  ...(isActive ? { backgroundColor: party.color, borderColor: party.color } : {}),
+                  fontSize: "0.8rem",
+                  padding: "0.25rem 0.6rem",
+                }}
                 onClick={() => setActiveParty(role)}
               >
-                {party.displayName}
+                {party.displayName.split(" (")[0]}
               </button>
             );
           })}
         </div>
-      </div>
-      <div
-        className="alert py-2 mb-0"
-        style={{ backgroundColor: PARTIES[activeParty].color + "15", borderColor: PARTIES[activeParty].color }}
-      >
-        <small>
-          <strong style={{ color: PARTIES[activeParty].color }}>
-            {PARTIES[activeParty].displayName}
-          </strong>
-          {" "}sees: {visibleContracts.length} contract(s), {visiblePayments.length} payment(s), {visibleAuditSummaries.length} audit summary(ies)
-          {activeParty === "auditor" && (
-            <span className="text-muted">
-              {" "}&mdash; Auditor has NO access to individual contracts or payments. Canton&apos;s sub-transaction privacy ensures this data never reaches the auditor&apos;s node.
-            </span>
-          )}
-          {(activeParty === "freelancerA" || activeParty === "freelancerB") && (
-            <span className="text-muted">
-              {" "}&mdash; This freelancer can ONLY see their own contract. The other freelancer&apos;s data never reaches their participant node.
-            </span>
-          )}
+        <small className="text-muted ms-auto" style={{ fontSize: "0.75rem" }}>
+          {total === 0 ? "No data on this node" : `${visibleContracts.length} contracts · ${visiblePayments.length} payments · ${visibleAuditSummaries.length} audits`}
         </small>
       </div>
     </div>
