@@ -9,19 +9,16 @@ const AuditorView: React.FC = () => {
       {/* ── Privacy Metrics ────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}>
         <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #dc3545" }}>
-          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F512;</div>
           <div className="gw-stat-label">Contracts Visible</div>
           <div className="gw-stat-value">{visibleContracts.length}</div>
           <div style={{ fontSize: "0.7rem", color: "#dc3545", fontWeight: 500 }}>Privacy enforced: always 0</div>
         </div>
         <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #dc3545" }}>
-          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F512;</div>
           <div className="gw-stat-label">Payments Visible</div>
           <div className="gw-stat-value">{visiblePayments.length}</div>
           <div style={{ fontSize: "0.7rem", color: "#dc3545", fontWeight: 500 }}>Privacy enforced: always 0</div>
         </div>
         <div className="gw-card-static" style={{ padding: "16px 20px", textAlign: "center", borderLeft: "3px solid #14A800" }}>
-          <div style={{ fontSize: "1.2rem", marginBottom: "4px" }}>&#x1F6E1;</div>
           <div className="gw-stat-label">Audit Summaries</div>
           <div className="gw-stat-value">{visibleAuditSummaries.length}</div>
           <div style={{ fontSize: "0.7rem", color: "#14A800", fontWeight: 500 }}>Aggregated data only</div>
@@ -33,7 +30,7 @@ const AuditorView: React.FC = () => {
 
       {visibleAuditSummaries.length === 0 ? (
         <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed", borderColor: "#dc3545" }}>
-          <div style={{ fontSize: "2rem", opacity: 0.15, marginBottom: "8px" }}>&#x1F6E1;</div>
+          <div style={{ fontSize: "0.9rem", opacity: 0.3, marginBottom: "8px", fontWeight: 600 }}>No data</div>
           <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Audit Summaries Yet</h6>
           <p style={{ fontSize: "0.82rem", color: "#5e6d55", margin: "0 0 8px" }}>
             This node has received zero individual contracts or payments.
@@ -53,7 +50,7 @@ const AuditorView: React.FC = () => {
                   </div>
                 </div>
                 <span className="gw-status-pill" style={{ background: "#ecfdf5", color: "#065f46" }}>
-                  &#x2713; Verified
+                  Verified
                 </span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
@@ -67,7 +64,7 @@ const AuditorView: React.FC = () => {
                 </div>
               </div>
               <div style={{ marginTop: "12px", fontSize: "0.75rem", color: "#5e6d55", borderTop: "1px solid #f0f0f0", paddingTop: "8px" }}>
-                &#x1F6E1; Aggregate only &mdash; zero individual rates, descriptions, or freelancer names visible.
+                Aggregate only &mdash; zero individual rates, descriptions, or freelancer names visible.
               </div>
             </div>
           ))}
@@ -75,9 +72,8 @@ const AuditorView: React.FC = () => {
       )}
 
       {/* ── Privacy Badge ──────────────────────────────────── */}
-      <div style={{ marginTop: "24px", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#5e6d55" }}>
-        <span>&#x1F512;</span>
-        <span>Canton&apos;s sub-transaction privacy ensures this node never receives individual contract data</span>
+      <div style={{ marginTop: "24px", fontSize: "0.78rem", color: "#5e6d55" }}>
+        Canton&apos;s sub-transaction privacy ensures this node never receives individual contract data
       </div>
     </div>
   );

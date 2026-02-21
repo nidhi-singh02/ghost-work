@@ -74,14 +74,13 @@ const ClientView: React.FC = () => {
       {visibleContracts.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px" }}>
           {[
-            { label: "Total Budget", value: `$${totalBudget.toLocaleString()}`, icon: "\u{1F4B0}" },
-            { label: "Active Contracts", value: String(activeCount), icon: "\u{1F4DD}" },
-            { label: "Amount Paid", value: `$${totalPaid.toLocaleString()}`, icon: "\u{2705}" },
-            { label: "Milestones", value: `${milestonesCompleted}/${milestonesTotal}`, icon: "\u{1F3AF}" },
+            { label: "Total Budget", value: `$${totalBudget.toLocaleString()}` },
+            { label: "Active Contracts", value: String(activeCount) },
+            { label: "Amount Paid", value: `$${totalPaid.toLocaleString()}` },
+            { label: "Milestones", value: `${milestonesCompleted}/${milestonesTotal}` },
           ].map((s) => (
             <div key={s.label} className="gw-card-static" style={{ padding: "16px 20px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                <span style={{ fontSize: "1rem" }}>{s.icon}</span>
+              <div style={{ marginBottom: "4px" }}>
                 <span className="gw-stat-label">{s.label}</span>
               </div>
               <div className="gw-stat-value">{s.value}</div>
@@ -143,7 +142,7 @@ const ClientView: React.FC = () => {
 
       {visibleContracts.length === 0 ? (
         <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed" }}>
-          <div style={{ fontSize: "2rem", opacity: 0.15, marginBottom: "8px" }}>&#x1F4DD;</div>
+          <div style={{ fontSize: "0.9rem", opacity: 0.3, marginBottom: "8px", fontWeight: 600 }}>No data</div>
           <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Contracts Yet</h6>
           <p style={{ fontSize: "0.85rem", color: "#5e6d55", margin: "0 0 16px" }}>
             Create your first freelancer contract to see Canton&apos;s privacy in action.
@@ -261,7 +260,7 @@ const ClientView: React.FC = () => {
                   </div>
                 </div>
                 <span className="gw-status-pill" style={{ background: "#fef2f2", color: "#dc3545" }}>
-                  &#x1F6E1; Auditor-visible
+                  Auditor-visible
                 </span>
               </div>
             </div>

@@ -47,7 +47,7 @@ const FreelancerView: React.FC = () => {
 
       {visibleContracts.length === 0 ? (
         <div className="gw-card-static" style={{ padding: "40px", textAlign: "center", borderStyle: "dashed", borderColor: partyInfo.color }}>
-          <div style={{ fontSize: "2rem", opacity: 0.15, marginBottom: "8px" }}>&#x1F512;</div>
+          <div style={{ fontSize: "0.9rem", opacity: 0.3, marginBottom: "8px", fontWeight: 600 }}>No data</div>
           <h6 style={{ fontWeight: 600, color: "#001e00" }}>No Contracts Visible</h6>
           <p style={{ fontSize: "0.82rem", color: "#5e6d55", margin: "0 0 8px" }}>
             Zero contracts on this node &mdash; data was never sent, not hidden.
@@ -139,9 +139,8 @@ const FreelancerView: React.FC = () => {
       )}
 
       {/* ── Privacy Badge ──────────────────────────────────── */}
-      <div style={{ marginTop: "24px", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#5e6d55" }}>
-        <span>&#x1F6E1;</span>
-        <span>Private &mdash; only your contracts are visible on this Canton node</span>
+      <div style={{ marginTop: "24px", fontSize: "0.78rem", color: "#5e6d55" }}>
+        Private &mdash; only your contracts are visible on this Canton node
       </div>
     </div>
   );

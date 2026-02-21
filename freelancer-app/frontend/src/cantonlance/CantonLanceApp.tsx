@@ -243,7 +243,7 @@ const AccountSwitcher: React.FC = () => {
                     <div style={{ fontWeight: 600 }}>{p.shortName}</div>
                     <div style={{ fontSize: "0.72rem", color: "#5e6d55" }}>{p.role}</div>
                   </div>
-                  {isActive && <span style={{ marginLeft: "auto", color: "#14A800", fontWeight: 700 }}>&#x2713;</span>}
+                  {isActive && <span style={{ marginLeft: "auto", color: "#14A800", fontWeight: 600, fontSize: "0.72rem" }}>Active</span>}
                 </button>
               );
             })}
@@ -325,7 +325,6 @@ const ContextBar: React.FC = () => {
       padding: "8px 20px", display: "flex", alignItems: "center",
       gap: "8px", fontSize: "0.8rem",
     }}>
-      <span style={{ fontSize: "0.9rem" }}>&#x1F6E1;</span>
       <span>
         <strong style={{ color: party.color }}>{party.shortName}</strong>
         <span style={{ color: "#5e6d55", marginLeft: "6px" }}>{descriptions[activeParty]}</span>
@@ -351,10 +350,9 @@ const HeroSection: React.FC = () => {
           background: "none", border: "none", color: "#5e6d55",
           cursor: "pointer", fontSize: "1rem", padding: "4px",
         }}
-      >&#x2715;</button>
+      >&times;</button>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-        <span style={{ fontSize: "1.5rem" }}>&#x1F6E1;</span>
+      <div style={{ marginBottom: "8px" }}>
         <h2 style={{ fontSize: "1.4rem", fontWeight: 700, margin: 0, color: "#001e00" }}>
           The Private Freelancer Platform
         </h2>
@@ -364,18 +362,13 @@ const HeroSection: React.FC = () => {
         enforced by Canton, not access control.
       </p>
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-        {[
-          { icon: "\u{1F512}", label: "Sub-Transaction Privacy" },
-          { icon: "\u{1F50D}", label: "Aggregate-Only Auditing" },
-          { icon: "\u{1F6E1}", label: "Protocol-Level Enforcement" },
-        ].map((f) => (
-          <span key={f.label} style={{
+        {["Sub-Transaction Privacy", "Aggregate-Only Auditing", "Protocol-Level Enforcement"].map((label) => (
+          <span key={label} style={{
             background: "#f0fdf4", border: "1px solid #d1fae5",
             borderRadius: "100px", padding: "6px 14px",
             fontSize: "0.78rem", fontWeight: 500, color: "#065f46",
-            display: "inline-flex", alignItems: "center", gap: "6px",
           }}>
-            {f.icon} {f.label}
+            {label}
           </span>
         ))}
       </div>
@@ -401,7 +394,6 @@ const AppContent: React.FC = () => {
       <nav className="gw-navbar">
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "1.3rem" }}>&#x1F6E1;</span>
             <span style={{ fontWeight: 700, fontSize: "1.15rem", color: "#001e00" }}>GhostWork</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

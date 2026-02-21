@@ -27,7 +27,6 @@ const PrivacyComparisonPanel: React.FC = () => {
         }}
         onClick={() => setOpen(!open)}
       >
-        <span style={{ fontSize: "1rem" }}>&#x1F6E1;</span>
         <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#001e00" }}>
           Privacy Comparison
         </span>
@@ -140,29 +139,15 @@ const PartyNodeDescription: React.FC<{ role: PartyRole }> = ({ role }) => {
     marginBottom: "6px",
   });
 
-  const iconStyle = (blocked: boolean): React.CSSProperties => ({
-    fontSize: "0.7rem",
-    flexShrink: 0,
-  });
-
   return (
     <div>
       <div style={itemStyle(desc.contractsBlocked)}>
-        <span style={iconStyle(desc.contractsBlocked)}>
-          {desc.contractsBlocked ? "\u{1F512}" : "\u2713"}
-        </span>
         <span>{desc.contracts}</span>
       </div>
       <div style={itemStyle(desc.paymentsBlocked)}>
-        <span style={iconStyle(desc.paymentsBlocked)}>
-          {desc.paymentsBlocked ? "\u{1F512}" : "\u2713"}
-        </span>
         <span>{desc.payments}</span>
       </div>
       <div style={{ ...itemStyle(desc.auditsBlocked), marginBottom: 0 }}>
-        <span style={iconStyle(desc.auditsBlocked)}>
-          {desc.auditsBlocked ? "\u{1F512}" : "\u2713"}
-        </span>
         <span>{desc.audits}</span>
       </div>
     </div>

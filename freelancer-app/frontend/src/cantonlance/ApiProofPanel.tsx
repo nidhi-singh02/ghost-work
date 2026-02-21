@@ -28,7 +28,6 @@ const ApiProofPanel: React.FC = () => {
         }}
         onClick={() => setOpen(!open)}
       >
-        <span style={{ fontSize: "1rem" }}>&#x1F4E1;</span>
         <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#001e00" }}>
           Canton API Log
         </span>
