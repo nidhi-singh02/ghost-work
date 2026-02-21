@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1a0a"/>
+      <stop offset="100%" stop-color="#001e00"/>
+    </linearGradient>
+    <linearGradient id="ghostBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#14A800"/>
+      <stop offset="60%" stop-color="#14A800"/>
+      <stop offset="100%" stop-color="#0d7a00" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="512" height="512" rx="64" fill="url(#bgGrad)"/>
+
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="240" r="160" fill="none" stroke="rgba(20,168,0,0.1)" stroke-width="1"/>
+
+  <!-- Ghost body with glow -->
+  <g filter="url(#glow)">
+    <path d="
+      M 256 95
+      C 170 95, 125 158, 125 230
+      L 125 350
+      Q 125 372, 152 356
+      Q 173 342, 189 362
+      Q 204 380, 222 362
+      Q 239 342, 256 362
+      Q 273 342, 290 362
+      Q 308 380, 323 362
+      Q 339 342, 360 356
+      Q 387 372, 387 350
+      L 387 230
+      C 387 158, 342 95, 256 95
+      Z
+    " fill="url(#ghostBody)" opacity="0.9"/>
+  </g>
+
+  <!-- Eyes - bright white, slightly glowing -->
+  <ellipse cx="210" cy="210" rx="20" ry="25" fill="#fff" opacity="0.95"/>
+  <ellipse cx="302" cy="210" rx="20" ry="25" fill="#fff" opacity="0.95"/>
+
+  <!-- Pupils -->
+  <ellipse cx="214" cy="213" rx="8" ry="10" fill="#001e00"/>
+  <ellipse cx="306" cy="213" rx="8" ry="10" fill="#001e00"/>
+
+  <!-- Shield on body -->
+  <path d="
+    M 256 265
+    L 228 282
+    L 228 315
+    Q 228 342, 256 354
+    Q 284 342, 284 315
+    L 284 282
+    Z
+  " fill="rgba(0,0,0,0.25)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+
+  <!-- Lock icon in shield -->
+  <rect x="244" y="298" width="24" height="20" rx="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+  <path d="M 249 298 L 249 290 Q 249 282, 256 282 Q 263 282, 263 290 L 263 298" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+  <circle cx="256" cy="310" r="3" fill="rgba(255,255,255,0.5)"/>
+
+  <!-- Text below -->
+  <text x="256" y="440" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="40" font-weight="800" fill="white" letter-spacing="-1">
+    GhostWork
+  </text>
+  <text x="256" y="468" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500" fill="rgba(255,255,255,0.5)" letter-spacing="3">
+    PRIVATE BY PROTOCOL
+  </text>
+</svg>

@@ -18,7 +18,7 @@ export default defineConfig({
       // DevNet: SSH tunnel to DevNet nginx on port 8090
       // Requires Host header for nginx routing to the participant node
       '/api/devnet': {
-        target: 'http://127.0.0.1:8090',
+        target: 'http://127.0.0.1:9090',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/devnet/, ''),
         headers: {

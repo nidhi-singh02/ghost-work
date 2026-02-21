@@ -35,7 +35,7 @@ JWT_AUDIENCE="https://ledger_api.example.com"
 # Local port for the SSH tunnel (can be overridden via env)
 LOCAL_TUNNEL_PORT="${TUNNEL_PORT:-8090}"
 # Remote nginx port on the DevNet server
-REMOTE_NGINX_PORT=8080
+REMOTE_NGINX_PORT="${REMOTE_PORT:-80}"
 # Output config file for the frontend
 CONFIG_FILE="${FRONTEND_DIR}/public/devnet-config.json"
 
