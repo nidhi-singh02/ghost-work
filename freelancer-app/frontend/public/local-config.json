@@ -1,0 +1,29 @@
+{
+  "mode": "local",
+  "ledgerApiUrl": "/api",
+  "packageId": "a8b657e75f4de7587a6b645f268fffe5cf16c46e7e68706dce41bf1345f4fefe",
+  "parties": {
+    "client": {
+      "partyId": "Client_Acme::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "client_user",
+      "token": ""
+    },
+    "freelancerA": {
+      "partyId": "FreelancerA_Alice::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "freelancerA_user",
+      "token": ""
+    },
+    "freelancerB": {
+      "partyId": "FreelancerB_Bob::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "freelancerB_user",
+      "token": ""
+    },
+    "auditor": {
+      "partyId": "Auditor_Eve::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "auditor_user",
+      "token": ""
+    }
+  },
+  "darPackageId": "cantonlance-freelance",
+  "deployedAt": "2026-02-21T03:00:00Z"
+}

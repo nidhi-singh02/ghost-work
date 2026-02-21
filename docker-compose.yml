@@ -1,10 +1,41 @@
 services:
+  # Canton sandbox — local single-node ledger with JSON API
+  sandbox:
+    image: cantonlance-dev
+    pull_policy: never
+    container_name: cantonlance-sandbox
+    volumes:
+      - ./freelancer-app:/workspace
+    working_dir: /workspace/daml/freelance
+    ports:
+      - "6865:6865"   # gRPC Ledger API
+      - "6870:6870"   # JSON HTTP Ledger API (Canton default)
+      - "5173:5173"   # Frontend (shared network)
+    command: >
+      bash -c "
+        daml build --no-legacy-assistant-warning &&
+        daml sandbox --no-legacy-assistant-warning
+          --dar .daml/dist/cantonlance-freelance-0.0.1.dar
+          --port 6865
+          --wall-clock-time
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:6870/livez"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  # React frontend — shares sandbox network so it can access localhost:6870
   frontend:
     image: cantonlance-dev
+    pull_policy: never
     container_name: cantonlance-frontend
     volumes:
       - ./freelancer-app:/workspace
     working_dir: /workspace/frontend
-    ports:
-      - "5173:5173"
-    command: npx vite --host 0.0.0.0 --port 5173
+    network_mode: "service:sandbox"
+    depends_on:
+      sandbox:
+        condition: service_healthy
+    command: bash -c "npm install && npx vite --host 0.0.0.0 --port 5173"

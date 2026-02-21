@@ -5,7 +5,7 @@ import {
   AuditSummary,
   PartyRole,
 } from "./types";
-import { CantonDevNetClient, DevNetConfig, loadDevNetConfig, ApiCall } from "./cantonApi";
+import { CantonDevNetClient, DevNetConfig, loadLedgerConfig, ApiCall } from "./cantonApi";
 
 interface StoreContextType {
   activeParty: PartyRole;
@@ -58,16 +58,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({
     ]);
   }, []);
 
-  // ── Load DevNet config on mount ───────────────────────────────────
+  // ── Load ledger config on mount ──────────────────────────────────
   useEffect(() => {
-    loadDevNetConfig().then((config) => {
+    loadLedgerConfig().then((config) => {
       if (config) {
         setDevNetConfig(config);
         devNetClientRef.current = new CantonDevNetClient(config);
         setIsConnected(true);
-        log("Connected to Canton DevNet at " + config.ledgerApiUrl);
+        const modeLabel = config.mode === "local" ? "Local Sandbox" : "Canton DevNet";
+        log(`Connected to ${modeLabel} at ${config.ledgerApiUrl}`);
       } else {
-        log("Waiting for DevNet config — run deploy-devnet.sh first");
+        log("No ledger config found — run setup-local.sh or deploy-devnet.sh");
       }
     });
   }, [log]);

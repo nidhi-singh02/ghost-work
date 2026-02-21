@@ -1,12 +1,11 @@
 /**
- * Canton JSON Ledger API v2 — Real DevNet Client
+ * Canton JSON Ledger API v2 — Client for Sandbox and DevNet
  *
- * This module talks to an actual Canton participant node via the JSON Ledger API.
- * Each party authenticates with its own JWT token, and the API response
- * already contains ONLY the contracts visible to that party — no client-side
- * filtering required. This is Canton's sub-transaction privacy in action.
+ * This module talks to a Canton participant node via the JSON Ledger API v2.
+ * Each party authenticates via user tokens (sandbox) or JWT (DevNet).
+ * The API response already contains ONLY the contracts visible to that party —
+ * no client-side filtering required. This is Canton's sub-transaction privacy.
  *
- * The API is accessed via SSH tunnel or direct VPN connection:
  *   POST /v2/state/active-contracts   — query visible contracts
  *   POST /v2/commands/submit-and-wait — submit Daml commands
  */
@@ -31,7 +30,7 @@ export interface ApiCall {
   description: string;
 }
 
-// ── DevNet configuration (written by deploy-devnet.sh) ────────────────
+// ── Ledger configuration (written by setup-local.sh or deploy-devnet.sh) ──
 
 export interface DevNetPartyConfig {
   partyId: string;
@@ -40,43 +39,30 @@ export interface DevNetPartyConfig {
 }
 
 export interface DevNetConfig {
-  mode: "devnet";
+  mode: "devnet" | "local";
   ledgerApiUrl: string;
   parties: Record<PartyRole, DevNetPartyConfig>;
   darPackageId: string;
   deployedAt: string;
+  packageId?: string;  // Resolved at runtime from DAR
 }
 
 // ── Template qualified names ──────────────────────────────────────────
 
 const TEMPLATE_MODULE = "Freelance";
-const PACKAGE_ID_PREFIX = "#cantonlance-freelance";
-
-function templateId(name: string): string {
-  return `${PACKAGE_ID_PREFIX}:${TEMPLATE_MODULE}:${name}`;
-}
-
-// ── Active contract response parsing ──────────────────────────────────
-
-interface CantonActiveContract {
-  contractId: string;
-  templateId: string;
-  payload: Record<string, unknown>;
-}
-
-interface CantonApiResponse {
-  activeContracts?: CantonActiveContract[];
-  result?: CantonActiveContract[];
-}
 
 // ── Real Canton Ledger API client ─────────────────────────────────────
 
 export class CantonDevNetClient {
   private config: DevNetConfig;
   private apiCalls: ApiCall[] = [];
+  private resolvedPackageId: string | null = null;
 
   constructor(config: DevNetConfig) {
     this.config = config;
+    if (config.packageId) {
+      this.resolvedPackageId = config.packageId;
+    }
   }
 
   getApiCalls(): ApiCall[] {
@@ -85,28 +71,73 @@ export class CantonDevNetClient {
 
   private logApiCall(call: ApiCall): void {
     this.apiCalls.unshift(call);
-    // Keep last 100 calls
     if (this.apiCalls.length > 100) {
       this.apiCalls = this.apiCalls.slice(0, 100);
     }
   }
 
+  private templateId(name: string): string {
+    if (this.resolvedPackageId) {
+      return `${this.resolvedPackageId}:${TEMPLATE_MODULE}:${name}`;
+    }
+    return `#${this.config.darPackageId}:${TEMPLATE_MODULE}:${name}`;
+  }
+
   /**
-   * Make an authenticated API call to the Canton JSON Ledger API.
+   * Resolve the package ID by finding our package among uploaded packages.
+   * Queries the sandbox to find the cantonlance-freelance package.
    */
-  private async apiRequest(
-    party: PartyRole,
+  async resolvePackageId(): Promise<void> {
+    if (this.resolvedPackageId) return;
+
+    try {
+      // Get list of all packages
+      const pkgResponse = await this.apiRequestRaw(
+        "GET",
+        "/v2/packages",
+        null,
+        "client"
+      );
+      const pkgData = pkgResponse as { packageIds?: string[] };
+      const packageIds = pkgData.packageIds || [];
+
+      // Try the package name prefix syntax first
+      // If that doesn't work, we'll need to check each package
+      // For now, store the most recently uploaded package that contains our templates
+      // We can detect this by trying a query and checking template IDs in the response
+      if (packageIds.length > 0) {
+        // The sandbox includes many stdlib packages. Our package is typically
+        // not in the default set, so it's one of the extras.
+        // We'll resolve it on first successful query.
+        console.log(`[CantonAPI] ${packageIds.length} packages on ledger`);
+      }
+    } catch (err) {
+      console.warn("[CantonAPI] Could not resolve package ID:", err);
+    }
+  }
+
+  /**
+   * Raw API request — handles auth based on mode.
+   */
+  private async apiRequestRaw(
     method: string,
     endpoint: string,
-    body: Record<string, unknown> | null
+    body: Record<string, unknown> | null,
+    party: PartyRole
   ): Promise<unknown> {
     const partyConfig = this.config.parties[party];
     const url = `${this.config.ledgerApiUrl}${endpoint}`;
 
     const headers: Record<string, string> = {
-      "Authorization": `Bearer ${partyConfig.token}`,
       "Content-Type": "application/json",
     };
+
+    if (this.config.mode === "local") {
+      // Sandbox doesn't require auth — skip Authorization header to avoid
+      // Pekko HTTP "Illegal header" warnings from colons in token
+    } else {
+      headers["Authorization"] = `Bearer ${partyConfig.token}`;
+    }
 
     const response = await fetch(url, {
       method,
@@ -123,10 +154,81 @@ export class CantonDevNetClient {
   }
 
   /**
+   * Build a JsCommands object with the right auth fields for the mode.
+   */
+  private buildCommands(
+    party: PartyRole,
+    commands: Record<string, unknown>[],
+    opts: { workflowId: string; commandId: string; submissionId: string }
+  ): Record<string, unknown> {
+    const partyConfig = this.config.parties[party];
+    return {
+      commands,
+      userId: partyConfig.userId,
+      workflowId: opts.workflowId,
+      applicationId: "cantonlance",
+      commandId: opts.commandId,
+      deduplicationPeriod: { Empty: {} },
+      actAs: [partyConfig.partyId],
+      readAs: [partyConfig.partyId],
+      submissionId: opts.submissionId,
+      disclosedContracts: [],
+      domainId: "",
+      packageIdSelectionPreference: [],
+    };
+  }
+
+  /**
+   * Submit commands and wait for the full transaction response (includes contract IDs).
+   */
+  private async submitForTransaction(
+    party: PartyRole,
+    commands: Record<string, unknown>[],
+    opts: { workflowId: string; commandId: string; submissionId: string }
+  ): Promise<Record<string, unknown>> {
+    const body = {
+      commands: this.buildCommands(party, commands, opts),
+    };
+    return (await this.apiRequestRaw(
+      "POST",
+      "/v2/commands/submit-and-wait-for-transaction",
+      body,
+      party
+    )) as Record<string, unknown>;
+  }
+
+  /**
+   * Submit commands and wait for completion only (no transaction details needed).
+   */
+  private async submitAndWait(
+    party: PartyRole,
+    commands: Record<string, unknown>[],
+    opts: { workflowId: string; commandId: string; submissionId: string }
+  ): Promise<Record<string, unknown>> {
+    return (await this.apiRequestRaw(
+      "POST",
+      "/v2/commands/submit-and-wait",
+      this.buildCommands(party, commands, opts),
+      party
+    )) as Record<string, unknown>;
+  }
+
+  /**
+   * Get the current ledger end offset.
+   */
+  private async getLedgerEnd(party: PartyRole): Promise<number> {
+    const result = await this.apiRequestRaw(
+      "GET",
+      "/v2/state/ledger-end",
+      null,
+      party
+    );
+    return (result as { offset: number }).offset;
+  }
+
+  /**
    * Query active contracts visible to a specific party.
-   * This is the core privacy demonstration — each party's JWT token
-   * authenticates as that party, and the API returns ONLY contracts
-   * where that party is a signatory or observer.
+   * Each party sees ONLY contracts where they are a signatory or observer.
    */
   async queryAsParty(party: PartyRole): Promise<{
     contracts: ProjectContract[];
@@ -137,6 +239,9 @@ export class CantonDevNetClient {
     const partyConfig = this.config.parties[party];
     const partyId = partyConfig.partyId;
 
+    // Get current ledger end for the snapshot
+    const offset = await this.getLedgerEnd(party);
+
     const requestBody = {
       filter: {
         filtersByParty: {
@@ -144,7 +249,9 @@ export class CantonDevNetClient {
             cumulative: [
               {
                 identifierFilter: {
-                  WildcardFilter: {},
+                  WildcardFilter: {
+                    value: { includeCreatedEventBlob: false },
+                  },
                 },
               },
             ],
@@ -152,62 +259,78 @@ export class CantonDevNetClient {
         },
       },
       verbose: true,
+      activeAtOffset: offset,
     };
 
     try {
-      const response = (await this.apiRequest(
-        party,
+      const response = await this.apiRequestRaw(
         "POST",
         "/v2/state/active-contracts",
-        requestBody
-      )) as CantonApiResponse;
+        requestBody,
+        party
+      );
 
-      const activeContracts = response.activeContracts || response.result || [];
+      // v2 API returns an array of contract entries
+      const entries = Array.isArray(response) ? response : [];
 
-      // Parse contracts by template type
       const contracts: ProjectContract[] = [];
       const payments: PaymentRecord[] = [];
       const auditSummaries: AuditSummary[] = [];
 
-      for (const ac of activeContracts) {
-        const tplId = ac.templateId || "";
-        const p = ac.payload || {};
+      for (const entry of entries) {
+        // Extract created event from the nested structure
+        const jsActive = entry?.contractEntry?.JsActiveContract;
+        if (!jsActive) continue;
+
+        const createdEvent = jsActive.createdEvent;
+        if (!createdEvent) continue;
+
+        const tplId = createdEvent.templateId || "";
+        const p = createdEvent.createArgument || {};
+        const contractId = createdEvent.contractId || "";
+
+        // Auto-resolve package ID from first response
+        if (!this.resolvedPackageId && tplId.includes(":Freelance:")) {
+          this.resolvedPackageId = tplId.split(":")[0];
+          console.log(`[CantonAPI] Resolved package ID: ${this.resolvedPackageId}`);
+        }
 
         if (tplId.includes("ProjectContract")) {
           contracts.push({
-            contractId: ac.contractId,
+            contractId,
             client: String(p.client || ""),
             freelancer: String(p.freelancer || ""),
             description: String(p.description || ""),
-            hourlyRate: Number(p.hourlyRate || 0),
-            totalBudget: Number(p.totalBudget || 0),
-            milestonesTotal: Number(p.milestonesTotal || 0),
-            milestonesCompleted: Number(p.milestonesCompleted || 0),
-            amountPaid: Number(p.amountPaid || 0),
+            hourlyRate: Number(parseFloat(p.hourlyRate) || 0),
+            totalBudget: Number(parseFloat(p.totalBudget) || 0),
+            milestonesTotal: Number(parseInt(p.milestonesTotal) || 0),
+            milestonesCompleted: Number(parseInt(p.milestonesCompleted) || 0),
+            amountPaid: Number(parseFloat(p.amountPaid) || 0),
             status: String(p.status || "Active") as ProjectContract["status"],
           });
         } else if (tplId.includes("PaymentRecord")) {
           payments.push({
-            contractId: ac.contractId,
+            contractId,
             client: String(p.client || ""),
             freelancer: String(p.freelancer || ""),
-            amount: Number(p.amount || 0),
-            milestoneNumber: Number(p.milestoneNumber || 0),
+            amount: Number(parseFloat(p.amount) || 0),
+            milestoneNumber: Number(parseInt(p.milestoneNumber) || 0),
             timestamp: String(p.timestamp || ""),
             projectDescription: String(p.projectDescription || ""),
           });
         } else if (tplId.includes("AuditSummary")) {
           auditSummaries.push({
-            contractId: ac.contractId,
+            contractId,
             client: String(p.client || ""),
             auditor: String(p.auditor || ""),
-            totalContractsCount: Number(p.totalContractsCount || 0),
-            totalAmountPaid: Number(p.totalAmountPaid || 0),
+            totalContractsCount: Number(parseInt(p.totalContractsCount) || 0),
+            totalAmountPaid: Number(parseFloat(p.totalAmountPaid) || 0),
             reportPeriod: String(p.reportPeriod || ""),
           });
         }
       }
 
+      const modeLabel = this.config.mode === "local" ? "SANDBOX" : "DEVNET";
       const apiCall: ApiCall = {
         timestamp: new Date().toISOString(),
         party,
@@ -215,19 +338,18 @@ export class CantonDevNetClient {
         endpoint: "/v2/state/active-contracts",
         requestBody,
         responseBody: {
-          totalContracts: activeContracts.length,
+          totalContracts: entries.length,
           projectContracts: contracts.length,
           paymentRecords: payments.length,
           auditSummaries: auditSummaries.length,
-          source: "REAL Canton DevNet JSON Ledger API",
-          note: `Authenticated as ${partyId} — response contains ONLY contracts visible to this party's participant node`,
+          source: `Canton JSON Ledger API v2 (${modeLabel})`,
+          note: `Authenticated as ${partyId} — response contains ONLY contracts visible to this party`,
         },
-        responseCount: activeContracts.length,
-        description: `[DEVNET] Query contracts visible to ${party} (${activeContracts.length} results)`,
+        responseCount: entries.length,
+        description: `[${modeLabel}] Query contracts visible to ${party} (${entries.length} results)`,
       };
 
       this.logApiCall(apiCall);
-
       return { contracts, payments, auditSummaries, apiCall };
     } catch (err) {
       const apiCall: ApiCall = {
@@ -238,10 +360,10 @@ export class CantonDevNetClient {
         requestBody,
         responseBody: {
           error: String(err),
-          source: "REAL Canton DevNet JSON Ledger API",
+          source: "Canton JSON Ledger API v2",
         },
         responseCount: 0,
-        description: `[DEVNET] Query failed: ${String(err).slice(0, 80)}`,
+        description: `Query failed: ${String(err).slice(0, 80)}`,
       };
       this.logApiCall(apiCall);
       throw err;
@@ -249,12 +371,7 @@ export class CantonDevNetClient {
   }
 
   /**
-   * Create a ProjectContract between client and a freelancer.
-   * Uses the propose-accept pattern: client creates ProjectProposal,
-   * then freelancer exercises AcceptProposal.
-   *
-   * For the hackathon demo, we use direct create with both signatories
-   * since both are on the same participant node.
+   * Create a ProjectContract via propose-accept pattern.
    */
   async createContract(
     freelancerRole: "freelancerA" | "freelancerB",
@@ -267,86 +384,65 @@ export class CantonDevNetClient {
     const freelancerParty = this.config.parties[freelancerRole].partyId;
 
     // Step 1: Client creates a ProjectProposal
-    const proposalBody = {
-      commands: [
-        {
-          CreateCommand: {
-            templateId: templateId("ProjectProposal"),
-            createArguments: {
-              client: clientParty,
-              freelancer: freelancerParty,
-              description,
-              hourlyRate: String(hourlyRate),
-              totalBudget: String(totalBudget),
-              milestonesTotal,
-            },
+    const proposalCommands = [
+      {
+        CreateCommand: {
+          templateId: this.templateId("ProjectProposal"),
+          createArguments: {
+            client: clientParty,
+            freelancer: freelancerParty,
+            description,
+            hourlyRate: String(hourlyRate),
+            totalBudget: String(totalBudget),
+            milestonesTotal,
           },
         },
-      ],
+      },
+    ];
+    const proposalOpts = {
       workflowId: "cantonlance-proposal",
-      applicationId: "cantonlance",
       commandId: `create-proposal-${Date.now()}`,
-      deduplicationPeriod: { Empty: {} },
-      actAs: [clientParty],
-      readAs: [clientParty],
       submissionId: `proposal-${Date.now()}`,
-      disclosedContracts: [],
-      domainId: "",
-      packageIdSelectionPreference: [],
     };
 
-    const proposalResponse = (await this.apiRequest(
-      "client",
-      "POST",
-      "/v2/commands/submit-and-wait",
-      proposalBody
-    )) as Record<string, unknown>;
+    const proposalResponse = await this.submitForTransaction(
+      "client", proposalCommands, proposalOpts
+    );
 
-    // Extract proposal contract ID from response
     const proposalContractId = this.extractContractId(proposalResponse);
 
     const proposalApiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: "client",
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
-      requestBody: proposalBody,
-      responseBody: proposalResponse as Record<string, unknown>,
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands("client", proposalCommands, proposalOpts) },
+      responseBody: proposalResponse,
       responseCount: 1,
-      description: `[DEVNET] Client created proposal for ${freelancerRole}`,
+      description: `Client created proposal for ${freelancerRole}`,
     };
     this.logApiCall(proposalApiCall);
 
     // Step 2: Freelancer accepts the proposal
-    const acceptBody = {
-      commands: [
-        {
-          ExerciseCommand: {
-            templateId: templateId("ProjectProposal"),
-            contractId: proposalContractId,
-            choice: "AcceptProposal",
-            choiceArgument: {},
-          },
+    const acceptCommands = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectProposal"),
+          contractId: proposalContractId,
+          choice: "AcceptProposal",
+          choiceArgument: {},
         },
-      ],
+      },
+    ];
+    const acceptOpts = {
       workflowId: "cantonlance-accept",
-      applicationId: "cantonlance",
       commandId: `accept-proposal-${Date.now()}`,
-      deduplicationPeriod: { Empty: {} },
-      actAs: [freelancerParty],
-      readAs: [freelancerParty],
       submissionId: `accept-${Date.now()}`,
-      disclosedContracts: [],
-      domainId: "",
-      packageIdSelectionPreference: [],
     };
 
-    const acceptResponse = (await this.apiRequest(
-      freelancerRole,
-      "POST",
-      "/v2/commands/submit-and-wait",
-      acceptBody
-    )) as Record<string, unknown>;
+    const acceptResponse = await this.submitForTransaction(
+      freelancerRole, acceptCommands, acceptOpts
+    );
 
     const contractId = this.extractContractId(acceptResponse);
 
@@ -354,14 +450,14 @@ export class CantonDevNetClient {
       timestamp: new Date().toISOString(),
       party: freelancerRole,
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
-      requestBody: acceptBody,
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands(freelancerRole, acceptCommands, acceptOpts) },
       responseBody: {
-        ...acceptResponse as Record<string, unknown>,
-        note: `Contract created between ${clientParty} and ${freelancerParty}. Only these two participant nodes have the data.`,
+        ...acceptResponse,
+        note: `Contract created between ${clientParty} and ${freelancerParty}. Only these parties can see the data.`,
       },
       responseCount: 1,
-      description: `[DEVNET] ${freelancerRole} accepted proposal → ProjectContract created`,
+      description: `${freelancerRole} accepted proposal → ProjectContract created`,
     };
     this.logApiCall(acceptApiCall);
 
@@ -375,47 +471,33 @@ export class CantonDevNetClient {
     contractId: string,
     freelancerRole: PartyRole
   ): Promise<{ apiCall: ApiCall }> {
-    const freelancerParty = this.config.parties[freelancerRole].partyId;
-
-    const requestBody = {
-      commands: [
-        {
-          ExerciseCommand: {
-            templateId: templateId("ProjectContract"),
-            contractId,
-            choice: "SubmitMilestone",
-            choiceArgument: {},
-          },
+    const cmds = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectContract"),
+          contractId,
+          choice: "SubmitMilestone",
+          choiceArgument: {},
         },
-      ],
+      },
+    ];
+    const opts = {
       workflowId: "cantonlance-milestone",
-      applicationId: "cantonlance",
-      commandId: `submit-milestone-${contractId}-${Date.now()}`,
-      deduplicationPeriod: { Empty: {} },
-      actAs: [freelancerParty],
-      readAs: [freelancerParty],
+      commandId: `submit-milestone-${Date.now()}`,
       submissionId: `milestone-${Date.now()}`,
-      disclosedContracts: [],
-      domainId: "",
-      packageIdSelectionPreference: [],
     };
 
-    const response = (await this.apiRequest(
-      freelancerRole,
-      "POST",
-      "/v2/commands/submit-and-wait",
-      requestBody
-    )) as Record<string, unknown>;
+    const response = await this.submitForTransaction(freelancerRole, cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: freelancerRole,
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
-      requestBody,
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands(freelancerRole, cmds, opts) },
       responseBody: response,
       responseCount: 1,
-      description: `[DEVNET] ${freelancerRole} submitted milestone on ${contractId}`,
+      description: `${freelancerRole} submitted milestone on ${contractId.slice(0, 16)}...`,
     };
     this.logApiCall(apiCall);
 
@@ -429,49 +511,35 @@ export class CantonDevNetClient {
     contractId: string,
     payment: number
   ): Promise<{ apiCall: ApiCall }> {
-    const clientParty = this.config.parties.client.partyId;
-
-    const requestBody = {
-      commands: [
-        {
-          ExerciseCommand: {
-            templateId: templateId("ProjectContract"),
-            contractId,
-            choice: "ApproveMilestone",
-            choiceArgument: {
-              milestonePayment: String(payment),
-            },
+    const cmds = [
+      {
+        ExerciseCommand: {
+          templateId: this.templateId("ProjectContract"),
+          contractId,
+          choice: "ApproveMilestone",
+          choiceArgument: {
+            milestonePayment: String(payment),
           },
         },
-      ],
+      },
+    ];
+    const opts = {
       workflowId: "cantonlance-approve",
-      applicationId: "cantonlance",
-      commandId: `approve-milestone-${contractId}-${Date.now()}`,
-      deduplicationPeriod: { Empty: {} },
-      actAs: [clientParty],
-      readAs: [clientParty],
+      commandId: `approve-milestone-${Date.now()}`,
       submissionId: `approve-${Date.now()}`,
-      disclosedContracts: [],
-      domainId: "",
-      packageIdSelectionPreference: [],
     };
 
-    const response = (await this.apiRequest(
-      "client",
-      "POST",
-      "/v2/commands/submit-and-wait",
-      requestBody
-    )) as Record<string, unknown>;
+    const response = await this.submitForTransaction("client", cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: "client",
       method: "POST",
-      endpoint: "/v2/commands/submit-and-wait",
-      requestBody,
+      endpoint: "/v2/commands/submit-and-wait-for-transaction",
+      requestBody: { commands: this.buildCommands("client", cmds, opts) },
       responseBody: response,
       responseCount: 1,
-      description: `[DEVNET] Client approved milestone — $${payment} payment`,
+      description: `Client approved milestone — $${payment} payment`,
     };
     this.logApiCall(apiCall);
 
@@ -488,53 +556,41 @@ export class CantonDevNetClient {
     const clientParty = this.config.parties.client.partyId;
     const auditorParty = this.config.parties.auditor.partyId;
 
-    const requestBody = {
-      commands: [
-        {
-          CreateCommand: {
-            templateId: templateId("AuditSummary"),
-            createArguments: {
-              client: clientParty,
-              auditor: auditorParty,
-              totalContractsCount,
-              totalAmountPaid: String(totalAmountPaid),
-              reportPeriod: "2026-Q1",
-            },
+    const cmds = [
+      {
+        CreateCommand: {
+          templateId: this.templateId("AuditSummary"),
+          createArguments: {
+            client: clientParty,
+            auditor: auditorParty,
+            totalContractsCount,
+            totalAmountPaid: String(totalAmountPaid),
+            reportPeriod: "2026-Q1",
           },
         },
-      ],
+      },
+    ];
+    const opts = {
       workflowId: "cantonlance-audit",
-      applicationId: "cantonlance",
       commandId: `audit-summary-${Date.now()}`,
-      deduplicationPeriod: { Empty: {} },
-      actAs: [clientParty],
-      readAs: [clientParty],
       submissionId: `audit-${Date.now()}`,
-      disclosedContracts: [],
-      domainId: "",
-      packageIdSelectionPreference: [],
     };
 
-    const response = (await this.apiRequest(
-      "client",
-      "POST",
-      "/v2/commands/submit-and-wait",
-      requestBody
-    )) as Record<string, unknown>;
+    const response = await this.submitAndWait("client", cmds, opts);
 
     const apiCall: ApiCall = {
       timestamp: new Date().toISOString(),
       party: "client",
       method: "POST",
       endpoint: "/v2/commands/submit-and-wait",
-      requestBody,
+      requestBody: this.buildCommands("client", cmds, opts),
       responseBody: {
         ...response,
         distributedTo: [clientParty, auditorParty],
         note: "Auditor can see aggregate totals only. No individual contracts or payments.",
       },
       responseCount: 1,
-      description: `[DEVNET] Audit summary created — visible to client + auditor only`,
+      description: `Audit summary created — visible to client + auditor only`,
     };
     this.logApiCall(apiCall);
 
@@ -542,65 +598,72 @@ export class CantonDevNetClient {
   }
 
   /**
-   * Extract contract ID from a submit-and-wait response.
+   * Extract contract ID from submit-and-wait response.
+   * v2 format: { updateId, completionOffset } for simple submit,
+   * or { transaction: { events: [{ created: { contractId } }] } }
    */
   private extractContractId(response: Record<string, unknown>): string {
-    // Canton v2 API response format varies, try common paths
     try {
-      // Format 1: { completion: { ... }, transaction: { events: [{ created: { contractId } }] } }
       const tx = response.transaction as Record<string, unknown> | undefined;
       if (tx) {
         const events = tx.events as Array<Record<string, unknown>> | undefined;
-        if (events && events.length > 0) {
-          const created = events[0].created as Record<string, unknown> | undefined;
-          if (created && created.contractId) {
-            return String(created.contractId);
+        if (events) {
+          // Walk through events looking for created contracts
+          // Skip archived events, find the last created event (the result of an exercise)
+          for (let i = events.length - 1; i >= 0; i--) {
+            const event = events[i];
+            // v2 format: { CreatedEvent: { contractId, ... } }
+            const ce = event.CreatedEvent as Record<string, unknown> | undefined;
+            if (ce?.contractId) return String(ce.contractId);
+            // Alternate format: { created: { contractId } }
+            const created = event.created as Record<string, unknown> | undefined;
+            if (created?.contractId) return String(created.contractId);
           }
         }
       }
 
-      // Format 2: { result: { events: [...] } }
-      const result = response.result as Record<string, unknown> | undefined;
-      if (result) {
-        const events = result.events as Array<Record<string, unknown>> | undefined;
-        if (events && events.length > 0) {
-          const created = events[0].created as Record<string, unknown> | undefined;
-          if (created && created.contractId) {
-            return String(created.contractId);
-          }
-        }
-      }
-
-      // Format 3: direct contractId
-      if (response.contractId) {
-        return String(response.contractId);
-      }
+      if (response.contractId) return String(response.contractId);
+      if (response.updateId) return `pending-${response.updateId}`;
     } catch {
       // Fall through
     }
-
     return `unknown-${Date.now()}`;
   }
 }
 
 /**
- * Try to load DevNet config. Returns null if not deployed to DevNet.
- *
- * The config file is loaded at runtime via fetch, not at build time.
- * This way the frontend compiles fine without the config file present.
- * The deploy-devnet.sh script writes the config before starting the app.
+ * Try to load ledger config (local sandbox or DevNet).
+ * Priority: local-config.json (sandbox) > devnet-config.json (DevNet)
  */
-export async function loadDevNetConfig(): Promise<DevNetConfig | null> {
+export async function loadLedgerConfig(): Promise<DevNetConfig | null> {
+  // Try local sandbox config first
   try {
-    // Try loading from a well-known path (placed by deploy-devnet.sh)
-    const response = await fetch("/devnet-config.json");
-    if (!response.ok) return null;
-    const config = await response.json() as DevNetConfig;
-    if (config && config.mode === "devnet") {
-      return config;
+    const response = await fetch("/local-config.json");
+    if (response.ok) {
+      const config = await response.json() as DevNetConfig;
+      if (config && (config.mode === "local" || config.mode === "devnet")) {
+        return config;
+      }
     }
   } catch {
-    // Config file doesn't exist — DevNet not yet deployed
+    // Not available
   }
+
+  // Fall back to DevNet config
+  try {
+    const response = await fetch("/devnet-config.json");
+    if (response.ok) {
+      const config = await response.json() as DevNetConfig;
+      if (config && config.mode === "devnet") {
+        return config;
+      }
+    }
+  } catch {
+    // Not available
+  }
+
   return null;
 }
+
+/** @deprecated Use loadLedgerConfig instead */
+export const loadDevNetConfig = loadLedgerConfig;

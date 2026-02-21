@@ -11,18 +11,18 @@ const ConnectionBanner: React.FC = () => {
   const { isLoading, isConnected, devNetConfig } = useStore();
 
   if (isConnected) {
+    const isLocal = devNetConfig?.mode === "local";
+    const modeLabel = isLocal ? "Local Sandbox" : "DevNet Connected";
+    const badgeLabel = isLoading ? "Syncing..." : modeLabel;
+
     return (
       <div className="alert alert-success py-2 d-flex align-items-center gap-2 mb-3">
-        <span className="badge bg-success">
-          {isLoading ? "Syncing..." : "DevNet Connected"}
-        </span>
+        <span className="badge bg-success">{badgeLabel}</span>
         <small>
-          Connected to <strong>Canton DevNet</strong> at{" "}
-          <code>{devNetConfig?.ledgerApiUrl}</code>. All data comes from real
-          Canton participant nodes. Privacy is enforced at the protocol level
-          &mdash; each party&apos;s JWT authenticates to their participant node,
-          and the API returns <strong>only</strong> contracts they&apos;re
-          authorized to see.
+          Connected to <strong>{isLocal ? "Canton Sandbox" : "Canton DevNet"}</strong> at{" "}
+          <code>{devNetConfig?.ledgerApiUrl}</code>. Privacy is enforced at the
+          protocol level &mdash; each party sees <strong>only</strong> contracts
+          they&apos;re authorized to see.
           {devNetConfig?.deployedAt && (
             <span className="text-muted">
               {" "}
@@ -38,16 +38,15 @@ const ConnectionBanner: React.FC = () => {
     <div className="alert alert-warning py-2 d-flex align-items-center gap-2 mb-3">
       <span className="badge bg-warning text-dark">Not Connected</span>
       <small>
-        Waiting for Canton DevNet connection. Run{" "}
-        <code>./deploy-devnet.sh</code> to deploy contracts and generate
-        the config file, then restart the frontend.
+        No ledger connection. Run <code>docker compose up</code> then{" "}
+        <code>./setup-local.sh</code> to start the local sandbox.
       </small>
     </div>
   );
 };
 
 const AppContent: React.FC = () => {
-  const { activeParty, isLoading, isConnected } = useStore();
+  const { activeParty, isLoading, isConnected, devNetConfig } = useStore();
 
   return (
     <div>
@@ -60,7 +59,7 @@ const AppContent: React.FC = () => {
             Private Freelancer Payment Protocol
             {isConnected && (
               <span className="badge bg-success" style={{ fontSize: "0.7rem" }}>
-                DEVNET
+                {devNetConfig?.mode === "local" ? "SANDBOX" : "DEVNET"}
               </span>
             )}
           </span>

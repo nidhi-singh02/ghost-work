@@ -1,0 +1,33 @@
+{
+  "mode": "local",
+  "ledgerApiUrl": "/api",
+  "packageId": "Main-Dalf: cantonlance-freelance-0.0.1-a8b657e75f4de7587a6b645f268fffe5",
+  "parties": {
+    "client": {
+      "partyId": "  Client_Acme -> Client_Acme::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb
+Client_Acme::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "client_user",
+      "token": ""
+    },
+    "freelancerA": {
+      "partyId": "  FreelancerA_Alice -> FreelancerA_Alice::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb
+FreelancerA_Alice::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "freelancerA_user",
+      "token": ""
+    },
+    "freelancerB": {
+      "partyId": "  FreelancerB_Bob -> FreelancerB_Bob::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb
+FreelancerB_Bob::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "freelancerB_user",
+      "token": ""
+    },
+    "auditor": {
+      "partyId": "  Auditor_Eve -> Auditor_Eve::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb
+Auditor_Eve::12204cff4add81d9fcb1fb35d734e7b7182b7306d5ea7f2f82746b493a03d87a37eb",
+      "userId": "auditor_user",
+      "token": ""
+    }
+  },
+  "darPackageId": "cantonlance-freelance",
+  "deployedAt": "2026-02-21T02:35:52Z"
+}
