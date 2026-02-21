@@ -197,22 +197,6 @@ daml/FreelanceTest.daml:privacyTest: ok, 5 active contracts, 9 transactions.
 
 ---
 
-## How to Demo
-
-1. Open `http://localhost:5173`
-2. Click **"Start Guided Demo"** on the hero section for a step-by-step walkthrough
-3. Or manually:
-   - As **Ethereum Foundation**: Create a contract for Nidhi ($150/hr, $5000, 3 milestones)
-   - Switch to **Nidhi**: See only her contract. Submit a milestone.
-   - Switch to **Akash**: See **zero contracts** — Canton never sent the data to this node.
-   - Switch to **Eve (Auditor)**: See **zero contracts, zero payments**.
-   - Back to **Ethereum Foundation**: Approve milestone, then click "Generate Audit Summary".
-   - Switch to **Eve**: Now sees aggregate totals only (1 contract, $1,667 paid) — no individual details.
-4. Expand **"Privacy Comparison"** to see what each participant node has
-5. Expand **"Canton API Log"** to see the real JSON Ledger API v2 requests/responses
-
----
-
 ## Project Structure
 
 ```
