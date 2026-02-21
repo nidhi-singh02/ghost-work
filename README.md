@@ -1,4 +1,4 @@
-# GhostWork — Private Freelancer Payment Protocol
+# GhostWork: Private Freelancer Dapp
 
 A privacy-first freelancer payment dApp on **Canton L1**. Clients hire freelancers through private contracts where each freelancer's rate, scope, and payments are invisible to other freelancers. An auditor can verify payment correctness without seeing any individual commercial terms.
 
