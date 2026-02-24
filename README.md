@@ -185,6 +185,12 @@ npm install
 npx vite
 ```
 
+OR 
+
+```bash
+docker compose up frontend
+```
+
 Open **http://localhost:5173** in your browser.
 
 The Vite dev server proxies `/api/local` to the sandbox at `127.0.0.1:6870`. The frontend auto-detects the local config and connects.
